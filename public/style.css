@@ -1,0 +1,9 @@
+.window{
+    position: absolute;
+    border: 1px solid red;
+}
+
+.windowHead{
+    cursor: move;
+    border: 1px solid blue;
+}
