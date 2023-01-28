@@ -1,0 +1,57 @@
+@font-face {
+    font-family: 'DotGothic16';
+    src: url('./resources/DotGothic16-Regular.woff2') format('woff2'),
+        url('./resources/DotGothic16-Regular.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+* {
+    cursor: url('./resources/pointer-default.png'), auto;
+}
+h1{
+    font-family: 'DotGothic16';
+    font-weight: normal;
+    font-style: normal;
+}
+img {
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
+}
+.folder {
+    cursor: url('./resources/pointer-clickable.png'), auto;
+    position: absolute;
+    padding: 0%;
+}
+.folder img{
+    pointer-events: none;
+}
+.folder h1{
+    font-size: small;
+    text-align: center;
+    padding: 0%;
+
+    line-height: 10px;
+    margin-top: -5px;    /* CORRECTION FOR LINE-HEIGHT */
+}
+.moving {
+    cursor: url('./resources/pointer-move.png'), move;
+}
+.window {
+    position: absolute;
+    border: 1px solid red;
+}
+.windowHead {
+    cursor:   url('./resources/pointer-move.png'), move;
+    border: 1px solid blue;
+    width: 100%;
+}
+.hidden {
+    display: none;
+    pointer-events: none;
+}
+.decor{
+    pointer-events: none;
+}
