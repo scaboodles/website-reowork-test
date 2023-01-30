@@ -10,11 +10,6 @@ function dragElement(elmnt){
         document.getElementById(elmnt.id + "Head").onmousedown = dragMouseDown;
     } else {
         //error can happen if element is missing a head or an id
-        if(elmnt.id){
-            console.log("missing head for " + elmnt.id);
-        }else{
-            console.log("anonymous click and drag");
-        }
         elmnt.onmousedown = dragMouseDown;
     }
 
