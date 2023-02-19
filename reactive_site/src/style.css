@@ -9,6 +9,9 @@
 
 * {
     cursor: url('./resources/pointer-default.png'), auto;
+    --resizer-thickness: 2.5px;
+    -ms-user-select: none;
+    user-select: none;
 }
 h1{
     font-family: 'DotGothic16';
@@ -21,7 +24,20 @@ img {
     image-rendering: crisp-edges;
 }
 .closeButton{
+    position: inherit;
     cursor: url('./resources/pointer-clickable.png'), auto;
+    background-image: url('./resources/close-button.png');
+    height: 16px;
+    width: 16px;
+    background-size: cover;
+    z-index: 3;
+    background-color: transparent;
+    border: none;
+    left: 25px;
+    top: 7px
+}
+.closeButton:hover{
+    background-image: url('./resources/close-button-hover.png');
 }
 .folder {
     cursor: url('./resources/pointer-clickable.png'), auto;
@@ -42,14 +58,136 @@ img {
 .moving {
     cursor: url('./resources/pointer-move.png'), move;
 }
+.resizingTop{
+    cursor: url("./resources/pointer-vert-resize.png") 6 11, row-resize;
+}
+.mover{
+    position: absolute;
+    border: 3px solid purple;
+}
 .window {
     position: absolute;
     border: 1px solid red;
+    border-radius: 3px;
+    width: 860px;
+    height: 440px;
+    min-height: 280px;
+    min-width: 280px;
 }
-.windowHead {
-    cursor:   url('./resources/pointer-move.png'), move;
-    border: 1px solid blue;
+.windowHead{
+    position: relative;
+    height: 30px;
+    top: var(--resizer-thickness);
+    cursor: url('./resources/pointer-move.png'), move;
     width: 100%;
+}
+.windowHead h1{
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%);
+    top: 1px;
+    font-size: small;
+    color: aliceblue;
+    line-height: 15%;
+    z-index: 2;
+    pointer-events: none;
+}
+.windowHeadBorder{
+    position:absolute;
+    z-index: 0;
+    height: 100%;
+    bottom: 0;
+    pointer-events: none;
+}
+.windowHeadBorderMid{
+    left: 5%;
+    width: 90%
+}
+.windowHeadBorderRight{
+    right: 0;
+}
+.windowHeadBorderLeft{
+    left: 0;
+}
+.resizer{
+    position: inherit;
+    background-color: black;
+}
+.resizer-r{
+    cursor: url("./resources/pointer-horz-resize.png") 11 11, col-resize;
+    height: calc(100% - 40px);
+    right: 0;
+    top: 30px;
+    width: var(--resizer-thickness);
+}
+.resizer-t{
+    cursor: url("./resources/pointer-vert-resize.png") 6 11, row-resize;
+    width: calc(100% - 26px);
+    left: 13px;
+    top: 2;
+    height: var(--resizer-thickness);
+}
+.resizer-l{
+    cursor: url("./resources/pointer-horz-resize.png") 11 11, col-resize;
+    height: calc(100% - 40px);
+    left: 0;
+    top: 30px;
+    width: var(--resizer-thickness);
+}
+.resizer-b{
+    cursor: url("./resources/pointer-vert-resize.png") 6 11, row-resize;
+    width: calc(100% - 20px);
+    left: 10px;
+    bottom: 0;
+    height: var(--resizer-thickness);
+}
+.windowBorderLeft{
+    position: absolute;
+    width: 10px;
+    height: calc(100% - 40px - var(--resizer-thickness));
+    top: 30px;
+    left: 2.5px;
+}
+.windowBorderRight{
+    position: absolute;
+    width: 10px;
+    height: calc(100% - 40px - var(--resizer-thickness));
+    top: 30px;
+    right: 2.5px;
+}
+.windowBorderBottomContainer{
+    position: absolute;
+    bottom: 0;
+    height: 15px;
+    width: 100%;
+    pointer-events: none;
+}
+.windowBorderBottom{
+    position: absolute;
+    left: 10px;
+    width: calc(100% - 20px);
+    height: 75%;
+    bottom: var(--resizer-thickness);
+}
+.windowBorderBottomLeft{
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 90%;
+}
+.windowBorderBottomRight{
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    height: 90%;
+}
+.windowContents{
+    position: absolute;
+    height: calc(100% - 47px);
+    width: calc(100% - 26px);
+    left: 12.5px;
+    top: 32px;
+    border: 1px solid black;
 }
 .hidden {
     display: none;

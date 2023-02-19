@@ -1,9 +1,36 @@
-export function clickAndDrag(element){
-    dragElement(element);
+export function clickAndDrag(element, win){
+    dragElement(element, win);
 }
 
-function dragElement(elmnt){
+export function suspendDrag(elmnt){
+    if (document.getElementById(elmnt.id + "Head")) {
+        // if present, the header is where you move the DIV from:
+        document.getElementById(elmnt.id + "Head").removeEventListener("onmousedown");
+    } else {
+        //error can happen if element is missing a head or an id
+        document.removeEventListener("onmousemove");
+    }
+}
+
+function dragElement(elmnt, win){
     var x1 = 0, x2 = 0, y1 = 0, y2 = 0;
+
+    //hella globals bc i am bad at programming
+    const clamp = (num, min, max) => Math.min(Math.max(num, min), max);
+            
+    let outOfBoundsX = 0;
+    let outOfBoundsY = 0;
+
+    let width = 0;
+    let height = 0;
+
+    let dxOld = 0;
+
+    let leftGrace = 0;
+    let rightGrace = 0;
+
+    let maxY =  window.innerHeight;
+    let maxX = window.innerWidth;
 
     if (document.getElementById(elmnt.id + "Head")) {
         // if present, the header is where you move the DIV from:
@@ -21,6 +48,28 @@ function dragElement(elmnt){
         x2 = e.clientX;
         y2 = e.clientY;
 
+        //initialize outOfBounds values
+        outOfBoundsX = elmnt.offsetLeft;
+        outOfBoundsY = elmnt.offsetTop;
+
+        //max height and width of window
+        maxX = window.innerHeight;
+        maxX = window.innerWidth;
+
+        if(win){ //need some data from win ref, might not exist yet
+            width = win.offsetWidth;
+            height = win.offsetHeight;
+            let pointOnWin = x2 - elmnt.offsetLeft;
+            leftGrace = pointOnWin;
+            rightGrace = width - pointOnWin;
+        }else{
+            width = elmnt.offsetWidth;
+            height = elmnt.offsetHeight;
+            let pointOnWin = x2 - elmnt.offsetLeft;
+            leftGrace = pointOnWin;
+            rightGrace = width - pointOnWin;
+        }
+
         document.onmouseup = closeDragElement; //stop dragging on mouse up
         document.onmousemove = elementDrag; // call a function whenever the cursor moves:
     }
@@ -34,21 +83,74 @@ function dragElement(elmnt){
         x1 = x2 - e.clientX;
         y1 = y2 - e.clientY;
 
+        let dx = -x1;
+
+        outOfBoundsY -= y1;
+
         x2 = e.clientX;
         y2 = e.clientY;
 
-        // set the element's new position:
-        elmnt.style.top = (elmnt.offsetTop - y1) + "px";
-        elmnt.style.left = (elmnt.offsetLeft - x1) + "px";
+        if(dxOld * dx < 0){//recalculate left and right grace spans on switch direction
+            let pointOnWin = x2 - elmnt.offsetLeft;
+            leftGrace = pointOnWin;
+            rightGrace = width - pointOnWin;
 
-        elmnt.classList.add("moving")
+            if(dx<0){ //force window back in bounds after change in direction
+                let outOfBounds = elmnt.offsetLeft + width - maxX;
+                if(outOfBounds>0){
+                    outOfBoundsX -= outOfBounds; 
+                    elmnt.style.left = `${maxX-width}px`;
+                }
+            }else{
+                let outOfBounds = elmnt.offsetLeft;
+                if(outOfBounds<0){
+                    outOfBoundsX -= outOfBounds; 
+                    elmnt.style.left = `0px`;
+                }
+            }
+        }
+        // set the element's new position:
+        if(dx<0){ //calculate moving left and right separately
+            if(outOfBoundsX >= 0 && outOfBoundsX - rightGrace <= maxX - width){//not out of bounds left side, within grace span of right edge
+                outOfBoundsX -= x1; //update outOfBounds tracker
+                elmnt.style.left = (elmnt.offsetLeft - x1) + "px";//update pos
+            }else if(rightGrace < 0){
+                let pointOnWin = x2 - elmnt.offsetLeft;
+                leftGrace = pointOnWin;
+                rightGrace = width - pointOnWin;
+            }
+        }else if(dx>0){
+            if(outOfBoundsX <= maxX - width && outOfBoundsX + leftGrace >= 0){
+                outOfBoundsX -= x1;
+                elmnt.style.left = (elmnt.offsetLeft - x1) + "px";
+            }else if(leftGrace < 0){
+                let pointOnWin = x2 - elmnt.offsetLeft;
+                leftGrace = pointOnWin;
+                rightGrace = width - pointOnWin;
+            }
+        }
+
+        if(outOfBoundsY >= 0 && outOfBoundsY <= maxY - height){
+            elmnt.style.top = (elmnt.offsetTop - y1) + "px";
+        }
+
+        if(!dx == 0){
+            dxOld = dx;
+        }
     }
 
     function closeDragElement(e) {
         // stop moving when mouse button is released by removing document mouse events
         document.onmouseup = null;
         document.onmousemove = null;
+        
+        if(elmnt.offsetLeft + width > maxX){//force window back in bounds if out
+            elmnt.style.left = `${maxX-width}px`;
+        }else if(elmnt.offsetLeft<0){
+            elmnt.style.left = `0px`;
+        }
 
-        elmnt.classList.remove("moving")
+        outOfBoundsX = 0;
+        outOfBoundsY = 0;
     }
 }
