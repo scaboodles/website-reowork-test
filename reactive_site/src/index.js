@@ -197,6 +197,27 @@ function Window(props) {
                     <div className='windowContents'>
                         <p>Try</p>
                         <p>it</p>
+                        <p>it</p>
+                        <p>it</p>
+                        <p>it</p>
+                        <p>it</p>
+                        <p>it</p>
+                        <p>it</p>
+                        <p>it</p>
+                        <p>it</p>
+                        <p>it</p>
+                        <p>it</p>
+                        <p>it</p>
+                        <p>it</p>
+                        <p>it</p>
+                        <p>it</p>
+                        <p>it</p>
+                        <p>it</p>
+                        <p>it</p>
+                        <p>it</p>
+                        <p>it</p>
+                        <p>it</p>
+                        <p>it</p>
                     </div>
 
                     <div className='windowBorderBottomContainer'>

@@ -16,8 +16,6 @@ function dragElement(elmnt, win){
     var x1 = 0, x2 = 0, y1 = 0, y2 = 0;
 
     //hella globals bc i am bad at programming
-    const clamp = (num, min, max) => Math.min(Math.max(num, min), max);
-            
     let outOfBoundsX = 0;
     let outOfBoundsY = 0;
 
@@ -25,12 +23,15 @@ function dragElement(elmnt, win){
     let height = 0;
 
     let dxOld = 0;
+    let dyOld = 0;
 
     let leftGrace = 0;
     let rightGrace = 0;
 
     let maxY =  window.innerHeight;
     let maxX = window.innerWidth;
+
+    const headerOffset = 15;
 
     if (document.getElementById(elmnt.id + "Head")) {
         // if present, the header is where you move the DIV from:
@@ -84,8 +85,7 @@ function dragElement(elmnt, win){
         y1 = y2 - e.clientY;
 
         let dx = -x1;
-
-        outOfBoundsY -= y1;
+        let dy = -y1;
 
         x2 = e.clientX;
         y2 = e.clientY;
@@ -106,6 +106,23 @@ function dragElement(elmnt, win){
                 if(outOfBounds<0){
                     outOfBoundsX -= outOfBounds; 
                     elmnt.style.left = `0px`;
+                }
+            }
+        }
+
+        console.log(e.clientY > 0);
+        if(dyOld * dy < 0){
+            if(dy>0){
+                let outOfBounds = elmnt.offsetTop;
+                if(outOfBounds < 0){
+                    outOfBoundsY -= outOfBounds;
+                    elmnt.style.top = `0px`;
+                }
+            }else{
+                let outOfBounds = (elmnt.offsetTop + height) - maxY;
+                if(outOfBounds > 0){
+                    outOfBoundsY -= outOfBounds;
+                    elmnt.style.top = `${maxY - height}px`
                 }
             }
         }
@@ -130,12 +147,23 @@ function dragElement(elmnt, win){
             }
         }
 
-        if(outOfBoundsY >= 0 && outOfBoundsY <= maxY - height){
-            elmnt.style.top = (elmnt.offsetTop - y1) + "px";
+        if(dy<0){ //calculate moving up and down separately
+            if(outOfBoundsY >= 0 && outOfBoundsY <= maxY && e.clientY < maxY - height + headerOffset){//not out of bounds on top
+                outOfBoundsY -= y1; //update outOfBounds tracker
+                elmnt.style.top = (elmnt.offsetTop - y1) + "px";//update pos
+            }
+        }else if(dy>0){
+            if(outOfBoundsY <= maxY - height && outOfBoundsY >= 0 && e.clientY - headerOffset > 0){
+                outOfBoundsY -= y1;
+                elmnt.style.top = (elmnt.offsetTop - y1) + "px";
+            }
         }
 
         if(!dx == 0){
             dxOld = dx;
+        }
+        if(!dy == 0){
+            dyOld = dy;
         }
     }
 
