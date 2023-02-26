@@ -22,6 +22,20 @@ img {
     image-rendering: pixelated;
     image-rendering: -moz-crisp-edges;
     image-rendering: crisp-edges;
+
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-drag: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+}
+
+#githubIcon{
+    position: absolute;
+    background-image: url('./resources/gh-icon.png');
+    top: 5%;
+    right: 5%;
+    z-index: 0;
 }
 .closeButton{
     position: inherit;
@@ -55,6 +69,22 @@ img {
     line-height: 10px;
     margin-top: -5px;    /* CORRECTION FOR LINE-HEIGHT */
 }
+.pdf {
+    cursor: url('./resources/pointer-clickable.png'), auto;
+    position: absolute;
+    padding: 0%;
+}
+.pdf img{
+    pointer-events: none;
+}
+.pdf h1{
+    font-size: small;
+    text-align: center;
+    padding: 0%;
+
+    line-height: 10px;
+    margin-top: -5px;    /* CORRECTION FOR LINE-HEIGHT */
+}
 .moving {
     cursor: url('./resources/pointer-move.png'), move;
 }
@@ -63,11 +93,9 @@ img {
 }
 .mover{
     position: absolute;
-    border: 3px solid purple;
 }
 .window {
     position: absolute;
-    border: 1px solid red;
     border-radius: 3px;
     width: 860px;
     height: 440px;

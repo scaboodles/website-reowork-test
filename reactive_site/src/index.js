@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import ReactDOM from 'react-dom/client';
+import ReactCliDOM from 'react-dom/client';
+import ReactDOM from 'react-dom';
 import './style.css';
 import { clickAndDrag, suspendDrag } from './draggableDiv';
 import { getNumFromPx } from './helpers';
@@ -13,6 +14,8 @@ function Window(props) {
     const resizeRefB = React.createRef(null);
 
     const windowShown = props.hideWindow;
+    const pairName = props.pairName;
+    const guts = props.guts;
 
     const minWidth = 280;
     const minHeight = 280;
@@ -175,19 +178,20 @@ function Window(props) {
         };
     });
     if (windowShown) {
-        return (
-            <div ref={moverRef} className="mover" id="mover">
-                <div className="window" id="testWin" ref={windowRef}>
+        console.log(pairName);
+        return ReactDOM.createPortal(
+            <div ref={moverRef} className="mover" id={pairName}>
+                <div className="window" ref={windowRef}>
                     <div ref={resizeRefT} className="resizer resizer-t"></div>
                     <div ref={resizeRefL} className="resizer resizer-l"></div>
                     <div ref={resizeRefR} className="resizer resizer-r"></div>
                     <div ref={resizeRefB} className="resizer resizer-b"></div>
 
-                    <div className="windowHead" id="moverHead">
+                    <div className="windowHead" id={`${pairName}Head`}>
                         <img src={require('./resources/window-head-left.png')} className="windowHeadBorder windowHeadBorderLeft"></img>
                         <button className='closeButton' type='button' onClick={closeFunc}></button>
                         <img src={require('./resources/window-head-middle.png')} className="windowHeadBorder windowHeadBorderMid"></img>
-                        <h1>Moving window test</h1>
+                        <h1>{pairName}</h1>
                         <img src={require('./resources/window-head-right.png')} className="windowHeadBorder windowHeadBorderRight"></img>
                     </div>
                     
@@ -195,29 +199,7 @@ function Window(props) {
                     <img src={require('./resources/window-border.png')} className="windowBorderRight"></img>
 
                     <div className='windowContents'>
-                        <p>Try</p>
-                        <p>it</p>
-                        <p>it</p>
-                        <p>it</p>
-                        <p>it</p>
-                        <p>it</p>
-                        <p>it</p>
-                        <p>it</p>
-                        <p>it</p>
-                        <p>it</p>
-                        <p>it</p>
-                        <p>it</p>
-                        <p>it</p>
-                        <p>it</p>
-                        <p>it</p>
-                        <p>it</p>
-                        <p>it</p>
-                        <p>it</p>
-                        <p>it</p>
-                        <p>it</p>
-                        <p>it</p>
-                        <p>it</p>
-                        <p>it</p>
+                        {guts()}
                     </div>
 
                     <div className='windowBorderBottomContainer'>
@@ -226,7 +208,8 @@ function Window(props) {
                         <img src={require('./resources/window-border-bottom-right.png')} className='windowBorderBottomRight'></img>
                     </div>
                 </div>
-            </div>
+            </div>,
+            document.body
         );
     }
     return null
@@ -241,57 +224,94 @@ function Folder(props) {
     return (
         <div ref={folderRef} className="folder" onDoubleClick={props.onDoubleClick}>
             <img src={require('./resources/folder.png')} />
-            <h1>name</h1>
+            <h1>{props.name}</h1>
         </div>
     );
 }
 
+function Pdf(props) {
+    const pdfRef = React.createRef(null);
+    useEffect(() => {
+        clickAndDrag(pdfRef.current);
+    });
+
+    return (
+        <div ref={pdfRef} className="pdf" onDoubleClick={props.onDoubleClick}>
+            <img src={require('./resources/txt-icon.png')} />
+            <h1>{props.name}</h1>
+        </div>
+    );
+}
 class IconWindowPair extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { windowToggle: false, pairId: props.id, windowSize: { height: 200, width: 200 } };
+        let icon = null;
+        if(this.props.type == "pdf"){
+            icon = () => <Pdf onDoubleClick={this.toggleWindowOn} name={this.props.name}/>;
+        }
+        else{
+            icon = () => <Folder onDoubleClick={this.toggleWindowOn} name={this.props.name}/>;
+        }
+        this.state = { windowToggle: false, pairName: props.name, fileType: this.props.type, icon: icon, guts: this.props.guts};
     }
-
-    windowResize = ((e, direction, ref, d) => {
-        this.setState((state) => {
-            return { windowToggle: state.windowToggle, pairId: state.pairId, windowSize: { width: state.width + d.width, height: state.height + d.height } };
-        })
-    })
 
     toggleWindowOn = (() => {
         this.setState((state) => {
-            return { windowToggle: true, pairId: state.pairId, windowSize: state.windowSize };
+            return { windowToggle: true, pairName: state.pairName, fileType: state.fileType, icon: state.icon, guts: this.state.guts};
         })
     });
 
     toggleWindowOff = (() => {
         this.setState((state) => {
-            return { windowToggle: false, pairId: state.pairId, windowSize: state.windowSize };
+            return { windowToggle: false, pairName: state.pairName, fileType: state.fileType, icon: state.icon, guts: this.state.guts};
         })
     });
 
     render() {
         return (
-            <div id={this.state.id}>
-                <Folder onDoubleClick={this.toggleWindowOn} />
-                <Window hideWindow={this.state.windowToggle} closeWindow={this.toggleWindowOff} windowSize={this.state.windowSize} resizeFunc={this.windowResize} />
+            <div id={`${this.state.pairName}Pair`}>
+                {this.state.icon()}
+                <Window hideWindow={this.state.windowToggle} closeWindow={this.toggleWindowOff} pairName={this.state.pairName} guts={this.state.guts}/>
             </div>
         )
     };
+}
+const FolderGutsTest = () => {
+    const interInternals = () => {
+        return(
+            <p>this is cool right?</p>
+        )
+    }
+    return(
+        <IconWindowPair name="nestedPdf" type="pdf" guts={interInternals}/>
+    )
+}
+
+const PdfGutsTest = () => {
+    return(
+        <p>This is a test of your emergency broadcast system</p>
+    )
 }
 
 class Desktop extends React.Component {
     constructor(props) {
         super(props)
     }
-
     render() {
+        const GithubLink = () => {
+            const img1 = require('./resources/gh-icon.png');
+            const img2 = require('./resources/gh-icon-invert.png');
+            return <a href='https://github.com/scaboodles' target="_blank"><img id='githubIcon' src={img1} onMouseOver={e => (e.currentTarget.src = img2)} onMouseOut={e => (e.currentTarget.src = img1)} alt="github link"></img></a>;
+        }
+
         return (
-            <div cursor={'col-resize'}>
-                <IconWindowPair id="folderTest" />
+            <div>
+                {GithubLink()}
+                <IconWindowPair name="test" type="folder" guts={FolderGutsTest}/>
+                <IconWindowPair name="samplePdf" type="pdf" guts={PdfGutsTest}/>
             </div>
         )
     };
 }
-const root = ReactDOM.createRoot(document.getElementById("root"));
+const root = ReactCliDOM.createRoot(document.getElementById("root"));
 root.render(<Desktop />);
