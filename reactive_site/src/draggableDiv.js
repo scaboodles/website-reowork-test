@@ -110,7 +110,6 @@ function dragElement(elmnt, win){
             }
         }
 
-        console.log(e.clientY > 0);
         if(dyOld * dy < 0){
             if(dy>0){
                 let outOfBounds = elmnt.offsetTop;

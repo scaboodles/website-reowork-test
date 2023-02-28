@@ -36,6 +36,7 @@ img {
     top: 5%;
     right: 5%;
     z-index: 0;
+    cursor: url('./resources/pointer-clickable.png'), auto;
 }
 .closeButton{
     position: inherit;
