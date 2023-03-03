@@ -7,14 +7,15 @@ import { getNumFromPx } from './helpers';
 
 const Window = React.forwardRef((props, ref) => {
     const moverRef = React.createRef(null)
-    const windowRef = ref;
+    const windowRef = React.createRef(null);
     const resizeRefT = React.createRef(null);
     const resizeRefL = React.createRef(null);
     const resizeRefR = React.createRef(null);
     const resizeRefB = React.createRef(null);
 
     const pairName = props.pairName;
-    const guts = props.guts;
+    const guts=props.guts;
+    const gutsRef = ref;
 
     const minWidth = 280;
     const minHeight = 280;
@@ -178,7 +179,7 @@ const Window = React.forwardRef((props, ref) => {
         };
     });
     if (windowShown) {
-        return ReactDOM.createPortal(
+        return (
             <div ref={moverRef} className="mover" id={pairName}>
                 <div className="window" ref={windowRef}>
                     <div ref={resizeRefT} className="resizer resizer-t"></div>
@@ -197,8 +198,8 @@ const Window = React.forwardRef((props, ref) => {
                     <img src={require('./resources/window-border.png')} className="windowBorderLeft"></img>
                     <img src={require('./resources/window-border.png')} className="windowBorderRight"></img>
 
-                    <div className='windowContents'>
-                        {guts()}
+                    <div className='windowContents' ref={gutsRef}>
+                        {this.props.children}
                     </div>
 
                     <div className='windowBorderBottomContainer'>
@@ -207,11 +208,10 @@ const Window = React.forwardRef((props, ref) => {
                         <img src={require('./resources/window-border-bottom-right.png')} className='windowBorderBottomRight'></img>
                     </div>
                 </div>
-            </div>,
-            document.body
+            </div>
         );
     }
-    return ReactDOM.createPortal(
+    return(
         <div className='hidden'>
             <div ref={moverRef} className="mover" id={pairName}>
                 <div className="window" ref={windowRef}>
@@ -231,8 +231,8 @@ const Window = React.forwardRef((props, ref) => {
                     <img src={require('./resources/window-border.png')} className="windowBorderLeft"></img>
                     <img src={require('./resources/window-border.png')} className="windowBorderRight"></img>
 
-                    <div className='windowContents'>
-                        {guts()}
+                    <div className='windowContents' ref={gutsRef}>
+                        {props.children}
                     </div>
 
                     <div className='windowBorderBottomContainer'>
@@ -242,36 +242,43 @@ const Window = React.forwardRef((props, ref) => {
                     </div>
                 </div>
             </div>
-        </div>,
-        document.body
-        );
-});
-
-const Folder = React.forwardRef((props, ref) => {
-    useEffect(() => {
-        clickAndDrag(ref.current);
-    });
-    const iconRef = React.createRef(null);
-    return React.createPortal(
-        <div ref={iconRef} className="folder" onDoubleClick={props.onDoubleClick}>
-            <img src={require('./resources/folder.png')} />
-            <h1>{props.name}</h1>
-        </div>,
-       ref.current 
+        </div>
     );
 });
 
-const Pdf = React.forwardRef((props, ref) => {
-    useEffect(() => {
-        clickAndDrag(ref.current);
-    });
+const Folder = React.forwardRef((props, ref) => {
     const iconRef = React.createRef(null);
-    return React.createPortal(
+    useEffect(() => {
+        clickAndDrag(iconRef.current);
+    });
+    if(ref != null && ref.current != null){
+        const windowContainer = ref.current;
+        windowContainer.state.guts.push( () => ( 
+            <div ref={iconRef} className="folder" onDoubleClick={props.onDoubleClick}>
+                <img src={require('./resources/folder.png')} />
+                <h1>{props.name}</h1>
+            </div>
+        ));
+    }else{
+        return ( 
+            <div ref={iconRef} className="folder" onDoubleClick={props.onDoubleClick}>
+                <img src={require('./resources/folder.png')} />
+                <h1>{props.name}</h1>
+            </div>
+        );
+    }
+});
+
+const Pdf = React.forwardRef((props, ref) => {
+    const iconRef = React.createRef(null);
+    useEffect(() => {
+        clickAndDrag(iconRef.current);
+    });
+    return(
         <div ref={iconRef} className="pdf" onDoubleClick={props.onDoubleClick}>
             <img src={require('./resources/txt-icon.png')} />
             <h1>{props.name}</h1>
-        </div>,
-        ref.current
+        </div>
     );
 });
 class IconWindowPair extends React.Component {
@@ -299,7 +306,7 @@ class IconWindowPair extends React.Component {
         return (
             <div id={`${this.state.pairName}Pair`}>
                 {this.state.icon()}
-                <Window hideWindow={this.state.windowToggle} closeWindow={this.toggleWindowOff} pairName={this.state.pairName} guts={this.state.guts} ref={this.props.forwardRefWindow}/>
+                <Window hideWindow={this.state.windowToggle} closeWindow={this.toggleWindowOff} pairName={this.state.pairName} guts={[this.state.guts]} ref={this.props.forwardRefWindow}/>
             </div>
         )
     };
