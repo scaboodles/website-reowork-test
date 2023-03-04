@@ -5,7 +5,7 @@ import './style.css';
 import { clickAndDrag, suspendDrag } from './draggableDiv';
 import { getNumFromPx } from './helpers';
 
-const Window = React.forwardRef((props, ref) => {
+function Window(props){
     const moverRef = React.createRef(null)
     const windowRef = React.createRef(null);
     const resizeRefT = React.createRef(null);
@@ -13,21 +13,21 @@ const Window = React.forwardRef((props, ref) => {
     const resizeRefR = React.createRef(null);
     const resizeRefB = React.createRef(null);
 
-    const pairName = props.pairName;
+    const pairName = props.name;
     const guts=props.guts;
-    const gutsRef = ref;
 
     const minWidth = 280;
     const minHeight = 280;
     let resizeOutOfBoundsOffset = 0;
 
-    let windowShown = props.hideWindow;
+    let windowShown = props.windowShown;
 
     const closeFunc = (() => {
         props.closeWindow();
     });
 
     useEffect(() => {
+        console.log(windowShown);
         if (windowRef.current != null) {
             //make moveable
             clickAndDrag(moverRef.current, windowRef.current);
@@ -198,8 +198,8 @@ const Window = React.forwardRef((props, ref) => {
                     <img src={require('./resources/window-border.png')} className="windowBorderLeft"></img>
                     <img src={require('./resources/window-border.png')} className="windowBorderRight"></img>
 
-                    <div className='windowContents' ref={gutsRef}>
-                        {this.props.children}
+                    <div className='windowContents'>
+                        {guts()}
                     </div>
 
                     <div className='windowBorderBottomContainer'>
@@ -211,65 +211,23 @@ const Window = React.forwardRef((props, ref) => {
             </div>
         );
     }
-    return(
-        <div className='hidden'>
-            <div ref={moverRef} className="mover" id={pairName}>
-                <div className="window" ref={windowRef}>
-                    <div ref={resizeRefT} className="resizer resizer-t"></div>
-                    <div ref={resizeRefL} className="resizer resizer-l"></div>
-                    <div ref={resizeRefR} className="resizer resizer-r"></div>
-                    <div ref={resizeRefB} className="resizer resizer-b"></div>
+    return null;
+};
 
-                    <div className="windowHead" id={`${pairName}Head`}>
-                        <img src={require('./resources/window-head-left.png')} className="windowHeadBorder windowHeadBorderLeft"></img>
-                        <button className='closeButton' type='button' onClick={closeFunc}></button>
-                        <img src={require('./resources/window-head-middle.png')} className="windowHeadBorder windowHeadBorderMid"></img>
-                        <h1>{pairName}</h1>
-                        <img src={require('./resources/window-head-right.png')} className="windowHeadBorder windowHeadBorderRight"></img>
-                    </div>
-                    
-                    <img src={require('./resources/window-border.png')} className="windowBorderLeft"></img>
-                    <img src={require('./resources/window-border.png')} className="windowBorderRight"></img>
-
-                    <div className='windowContents' ref={gutsRef}>
-                        {props.children}
-                    </div>
-
-                    <div className='windowBorderBottomContainer'>
-                        <img src={require('./resources/window-border-bottom-left.png')} className='windowBorderBottomLeft'></img>
-                        <img src={require('./resources/window-border.png')} className='windowBorderBottom'></img>
-                        <img src={require('./resources/window-border-bottom-right.png')} className='windowBorderBottomRight'></img>
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
-});
-
-const Folder = React.forwardRef((props, ref) => {
+const Folder = (props) => {
     const iconRef = React.createRef(null);
     useEffect(() => {
         clickAndDrag(iconRef.current);
     });
-    if(ref != null && ref.current != null){
-        const windowContainer = ref.current;
-        windowContainer.state.guts.push( () => ( 
-            <div ref={iconRef} className="folder" onDoubleClick={props.onDoubleClick}>
-                <img src={require('./resources/folder.png')} />
-                <h1>{props.name}</h1>
-            </div>
-        ));
-    }else{
-        return ( 
-            <div ref={iconRef} className="folder" onDoubleClick={props.onDoubleClick}>
-                <img src={require('./resources/folder.png')} />
-                <h1>{props.name}</h1>
-            </div>
-        );
-    }
-});
+    return ( 
+        <div ref={iconRef} className="folder" onDoubleClick={props.onDoubleClick}>
+            <img src={require('./resources/folder.png')} />
+            <h1>{props.name}</h1>
+        </div>
+    );
+};
 
-const Pdf = React.forwardRef((props, ref) => {
+const Pdf  = (props) => {
     const iconRef = React.createRef(null);
     useEffect(() => {
         clickAndDrag(iconRef.current);
@@ -280,67 +238,16 @@ const Pdf = React.forwardRef((props, ref) => {
             <h1>{props.name}</h1>
         </div>
     );
-});
-class IconWindowPair extends React.Component {
-    constructor(props) {
-        super(props);
-        let icon = null;
-        if(this.props.type == "pdf"){
-            icon = () => <Pdf onDoubleClick={this.toggleWindowOn} name={this.props.name} ref = {props.forwardRefIcon}/>;
-        }
-        else{
-            icon = () => <Folder onDoubleClick={this.toggleWindowOn} name={this.props.name} ref={props.forwardRefIcon}/>;
-        }
-        this.state = { windowToggle: false, pairName: props.name, fileType: this.props.type, icon: icon, guts: this.props.guts};
-    }
-
-    toggleWindowOn = (() => {
-        this.setState({windowToggle:true});
-    });
-
-    toggleWindowOff = (() => {
-        this.setState({windowToggle:false});
-    });
-
-    render() {
-        return (
-            <div id={`${this.state.pairName}Pair`}>
-                {this.state.icon()}
-                <Window hideWindow={this.state.windowToggle} closeWindow={this.toggleWindowOff} pairName={this.state.pairName} guts={[this.state.guts]} ref={this.props.forwardRefWindow}/>
-            </div>
-        )
-    };
-}
-
-const IconWindowPairWithRefs = React.forwardRef((props, ref) => {
-    const {ref1, ref2} = ref;
-    return(
-        <IconWindowPair {...props} forwardRefIcon={ref1} forwardRefWindow={ref2}/>
-    );
-});
-
-const FolderGutsTest = () => {
-    /*const interInternals = () => {
-        return(
-            <p>this is cool right?</p>
-        )
-    }
-    return(
-        <IconWindowPair name="nestedPdf" type="pdf" guts={interInternals}/>
-    )*/
-    <p>nothin special</p>
-}
-
-const PdfGutsTest = () => {
-    return(
-        <p>This is a test of your emergency broadcast system</p>
-    )
-}
-
+};
 class Desktop extends React.Component {
     constructor(props) {
         super(props)
-        this.state = {testFolderRef:React.createRef(null), testFolderWindow:React.createRef(null)};
+        this.state = {
+            testFolderRef:React.createRef(null), 
+            testFolderWindow:React.createRef(null),
+            testFolderWindowShown:false,
+            testPDFWindowShown:false
+        };
     }
     render() {
         const GithubLink = () => {
@@ -348,11 +255,30 @@ class Desktop extends React.Component {
             const img2 = require('./resources/gh-icon-invert.png');
             return <a href='https://github.com/scaboodles' target="_blank"><img id='githubIcon' src={img1} onMouseOver={e => (e.currentTarget.src = img2)} onMouseOut={e => (e.currentTarget.src = img1)} alt="github link"></img></a>;
         }
+        const testPDF = () => {
+            return <Pdf name='read' onDoubleClick={() => this.setState({testPDFWindowShown:true})}/>
+        }
+        const testPDFWindow = () =>{
+            let str = () =><p>'this is a test of your emergency broadcast system'</p>;
+            return <Window name='read' closeWindow={()=> this.setState({testPDFWindowShown:false})} windowShown={this.state.testPDFWindowShown} guts={str}/>
+        }
+        const testFolder = () => {
+            const openFunc = () => {
+                this.setState({testFolderWindowShown:true})
+                console.log('window open');
+            }
+            return <Folder name='testFolder' onDoubleClick={openFunc}/>
+        }
+        const testFolderWindow = () => {
+            return <Window name='testFolder' closeWindow={() => this.setState({testFolderWindowShown:false})} windowShown={this.state.testFolderWindowShown} guts={testPDF}/>
+        }
 
         return (
             <div>
                 {GithubLink()}
-                <IconWindowPairWithRefs name="test" type="folder" guts={FolderGutsTest} ref={{ref1:this.state.testFolderRef, ref2:this.state.testFolderWindow}}/>
+                {testFolder()}
+                {testFolderWindow()}
+                {testPDFWindow()}
             </div>
         )
     };

@@ -218,6 +218,7 @@ img {
     top: 32px;
     border: 1px solid black;
     overflow-y: auto;
+    background-color: lightgray;
 }
 .hidden {
     display: none;
