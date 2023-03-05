@@ -1,3 +1,4 @@
+import { getOffset } from "./helpers";
 export function clickAndDrag(element, win){
     dragElement(element, win);
 }
@@ -28,8 +29,21 @@ function dragElement(elmnt, win){
     let leftGrace = 0;
     let rightGrace = 0;
 
-    let maxY =  window.innerHeight;
-    let maxX = window.innerWidth;
+    let maxY = 0;
+    let maxX = 0;
+
+    let minX = 0;
+    let minY = 0;
+
+    let parentDiv = elmnt.parentNode;
+    if(parentDiv == document.getElementById("Desktop")){
+        maxY =  window.innerHeight;
+        maxX = window.innerWidth;
+    }else{
+        maxY = parentDiv.clientHeight;
+        maxX = parentDiv.clientWidth;
+    }
+
 
     const headerOffset = 15;
 
@@ -73,6 +87,7 @@ function dragElement(elmnt, win){
 
         document.onmouseup = closeDragElement; //stop dragging on mouse up
         document.onmousemove = elementDrag; // call a function whenever the cursor moves:
+
     }
 
     function elementDrag(e){
@@ -97,13 +112,13 @@ function dragElement(elmnt, win){
 
             if(dx<0){ //force window back in bounds after change in direction
                 let outOfBounds = elmnt.offsetLeft + width - maxX;
-                if(outOfBounds>0){
+                if(outOfBounds>minX){
                     outOfBoundsX -= outOfBounds; 
                     elmnt.style.left = `${maxX-width}px`;
                 }
             }else{
                 let outOfBounds = elmnt.offsetLeft;
-                if(outOfBounds<0){
+                if(outOfBounds<minX){
                     outOfBoundsX -= outOfBounds; 
                     elmnt.style.left = `0px`;
                 }
@@ -113,13 +128,13 @@ function dragElement(elmnt, win){
         if(dyOld * dy < 0){
             if(dy>0){
                 let outOfBounds = elmnt.offsetTop;
-                if(outOfBounds < 0){
+                if(outOfBounds < minY){
                     outOfBoundsY -= outOfBounds;
                     elmnt.style.top = `0px`;
                 }
             }else{
                 let outOfBounds = (elmnt.offsetTop + height) - maxY;
-                if(outOfBounds > 0){
+                if(outOfBounds > minY){
                     outOfBoundsY -= outOfBounds;
                     elmnt.style.top = `${maxY - height}px`
                 }
@@ -127,7 +142,7 @@ function dragElement(elmnt, win){
         }
         // set the element's new position:
         if(dx<0){ //calculate moving left and right separately
-            if(outOfBoundsX >= 0 && outOfBoundsX - rightGrace <= maxX - width){//not out of bounds left side, within grace span of right edge
+            if(outOfBoundsX >= minX && outOfBoundsX - rightGrace <= maxX - width){//not out of bounds left side, within grace span of right edge
                 outOfBoundsX -= x1; //update outOfBounds tracker
                 elmnt.style.left = (elmnt.offsetLeft - x1) + "px";//update pos
             }else if(rightGrace < 0){
@@ -136,7 +151,7 @@ function dragElement(elmnt, win){
                 rightGrace = width - pointOnWin;
             }
         }else if(dx>0){
-            if(outOfBoundsX <= maxX - width && outOfBoundsX + leftGrace >= 0){
+            if(outOfBoundsX <= maxX - width && outOfBoundsX + leftGrace >= minX){
                 outOfBoundsX -= x1;
                 elmnt.style.left = (elmnt.offsetLeft - x1) + "px";
             }else if(leftGrace < 0){
@@ -147,14 +162,18 @@ function dragElement(elmnt, win){
         }
 
         if(dy<0){ //calculate moving up and down separately
-            if(outOfBoundsY >= 0 && outOfBoundsY <= maxY && e.clientY < maxY - height + headerOffset){//not out of bounds on top
+            if(outOfBoundsY >= minY && outOfBoundsY <= maxY && e.clientY < maxY - height + headerOffset){//not out of bounds on top
                 outOfBoundsY -= y1; //update outOfBounds tracker
                 elmnt.style.top = (elmnt.offsetTop - y1) + "px";//update pos
+            }else{
+                console.log("false");
             }
         }else if(dy>0){
-            if(outOfBoundsY <= maxY - height && outOfBoundsY >= 0 && e.clientY - headerOffset > 0){
+            if(outOfBoundsY <= maxY - height && outOfBoundsY >= minY && e.clientY - headerOffset > minY){
                 outOfBoundsY -= y1;
                 elmnt.style.top = (elmnt.offsetTop - y1) + "px";
+            }else{
+                console.log("false");
             }
         }
 
@@ -173,7 +192,7 @@ function dragElement(elmnt, win){
         
         if(elmnt.offsetLeft + width > maxX){//force window back in bounds if out
             elmnt.style.left = `${maxX-width}px`;
-        }else if(elmnt.offsetLeft<0){
+        }else if(elmnt.offsetLeft<minX){
             elmnt.style.left = `0px`;
         }
 

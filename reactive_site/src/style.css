@@ -94,6 +94,7 @@ img {
 }
 .mover{
     position: absolute;
+    z-index: 1;
 }
 .window {
     position: absolute;

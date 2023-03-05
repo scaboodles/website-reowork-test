@@ -5,6 +5,18 @@ import './style.css';
 import { clickAndDrag, suspendDrag } from './draggableDiv';
 import { getNumFromPx } from './helpers';
 
+const findKeyOfmax = (dict) => {
+    let maxKey, maxValue = 0;
+    for(const [key, value] of Object.entries(dict)) {
+      if(value > maxValue) {
+        maxValue = value;
+        maxKey = key;
+      }
+    }
+
+    return maxKey;
+}
+
 function Window(props){
     const moverRef = React.createRef(null)
     const windowRef = React.createRef(null);
@@ -16,6 +28,8 @@ function Window(props){
     const pairName = props.name;
     const guts=props.guts;
 
+    const zIndexes=props.zIndexes;
+
     const minWidth = 280;
     const minHeight = 280;
     let resizeOutOfBoundsOffset = 0;
@@ -26,11 +40,43 @@ function Window(props){
         props.closeWindow();
     });
 
+    const updateZIndexes = () =>{
+        const highestZ=findKeyOfmax(zIndexes);
+        let newZ=0;
+        if(highestZ == pairName){
+            return;
+        }else{
+            let sortedKeys = sortedKeysByVal(zIndexes);
+            let currIndex = sortedKeys.indexOf(pairName);
+            sortedKeys.unshift(sortedKeys.splice(currIndex, 1)[0]);
+            let updatedZs = {};
+            for(let i=0; i<sortedKeys.length; i++){
+                updatedZs[sortedKeys[i]] = sortedKeys.length - i + 1;
+            }
+            props.updateZ(updatedZs);
+        }
+    }
+    
+    const sortedKeysByVal = (dict) =>{
+        let items =Object.keys(dict).map(
+            (key) => {return [key, dict[key]] });
+        items.sort(
+            (first, second) => { return first[1] = second[1]}
+        );
+        let keys = items.map(
+            (e) => { return e[0]}
+        );
+
+        return keys
+    }
+
     useEffect(() => {
-        console.log(windowShown);
         if (windowRef.current != null) {
             //make moveable
             clickAndDrag(moverRef.current, windowRef.current);
+
+            //update z indexes
+            moverRef.current.style["z-index"] = zIndexes[pairName];
 
             //make resize handles
             const resizableEle = windowRef.current;
@@ -181,7 +227,7 @@ function Window(props){
     if (windowShown) {
         return (
             <div ref={moverRef} className="mover" id={pairName}>
-                <div className="window" ref={windowRef}>
+                <div className="window" ref={windowRef} onMouseDown={() => updateZIndexes()}>
                     <div ref={resizeRefT} className="resizer resizer-t"></div>
                     <div ref={resizeRefL} className="resizer resizer-l"></div>
                     <div ref={resizeRefR} className="resizer resizer-r"></div>
@@ -246,35 +292,38 @@ class Desktop extends React.Component {
             testFolderRef:React.createRef(null), 
             testFolderWindow:React.createRef(null),
             testFolderWindowShown:false,
-            testPDFWindowShown:false
+            testPDFWindowShown:false,
+            zIndexes:{testFolder:1, testPDF:2}
         };
     }
     render() {
+        const setNewZIndex = (updatedIndexes) => {
+            this.setState({zIndexes:updatedIndexes});
+        }
         const GithubLink = () => {
             const img1 = require('./resources/gh-icon.png');
             const img2 = require('./resources/gh-icon-invert.png');
             return <a href='https://github.com/scaboodles' target="_blank"><img id='githubIcon' src={img1} onMouseOver={e => (e.currentTarget.src = img2)} onMouseOut={e => (e.currentTarget.src = img1)} alt="github link"></img></a>;
         }
         const testPDF = () => {
-            return <Pdf name='read' onDoubleClick={() => this.setState({testPDFWindowShown:true})}/>
+            return <Pdf name='testPDF' onDoubleClick={() => this.setState({testPDFWindowShown:true})}/>
         }
         const testPDFWindow = () =>{
             let str = () =><p>'this is a test of your emergency broadcast system'</p>;
-            return <Window name='read' closeWindow={()=> this.setState({testPDFWindowShown:false})} windowShown={this.state.testPDFWindowShown} guts={str}/>
+            return <Window name='testPDF' closeWindow={()=> this.setState({testPDFWindowShown:false})} windowShown={this.state.testPDFWindowShown} guts={str} zIndexes={this.state.zIndexes} updateZ={(indexDict) => setNewZIndex(indexDict)}/>
         }
         const testFolder = () => {
             const openFunc = () => {
                 this.setState({testFolderWindowShown:true})
-                console.log('window open');
             }
             return <Folder name='testFolder' onDoubleClick={openFunc}/>
         }
         const testFolderWindow = () => {
-            return <Window name='testFolder' closeWindow={() => this.setState({testFolderWindowShown:false})} windowShown={this.state.testFolderWindowShown} guts={testPDF}/>
+            return <Window name='testFolder' closeWindow={() => this.setState({testFolderWindowShown:false})} windowShown={this.state.testFolderWindowShown} guts={testPDF} zIndexes={this.state.zIndexes} updateZ={(indexDict) => setNewZIndex(indexDict)}/>
         }
 
         return (
-            <div>
+            <div id='Desktop'>
                 {GithubLink()}
                 {testFolder()}
                 {testFolderWindow()}
