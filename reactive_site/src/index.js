@@ -4,6 +4,7 @@ import ReactDOM from 'react-dom';
 import './style.css';
 import { clickAndDrag, suspendDrag } from './draggableDiv';
 import { getNumFromPx } from './helpers';
+import { landingWindow } from './landingPage';
 
 const findKeyOfmax = (dict) => {
     let maxKey, maxValue = 0;
@@ -42,10 +43,10 @@ function Window(props){
 
     const updateZIndexes = () =>{
         const highestZ=findKeyOfmax(zIndexes);
-        let newZ=0;
         if(highestZ == pairName){
             return;
         }else{
+            console.log(zIndexes);
             let sortedKeys = sortedKeysByVal(zIndexes);
             let currIndex = sortedKeys.indexOf(pairName);
             sortedKeys.unshift(sortedKeys.splice(currIndex, 1)[0]);
@@ -260,13 +261,9 @@ function Window(props){
     return null;
 };
 
-const Folder = (props) => {
-    const iconRef = React.createRef(null);
-    useEffect(() => {
-        clickAndDrag(iconRef.current);
-    });
+export const Folder = (props) => {
     return ( 
-        <div ref={iconRef} className="folder" onDoubleClick={props.onDoubleClick}>
+        <div className="folder" onDoubleClick={props.onDoubleClick}>
             <img src={require('./resources/folder.png')} />
             <h1>{props.name}</h1>
         </div>
@@ -274,17 +271,23 @@ const Folder = (props) => {
 };
 
 const Pdf  = (props) => {
-    const iconRef = React.createRef(null);
-    useEffect(() => {
-        clickAndDrag(iconRef.current);
-    });
     return(
-        <div ref={iconRef} className="pdf" onDoubleClick={props.onDoubleClick}>
+        <div className="pdf" onDoubleClick={props.onDoubleClick}>
             <img src={require('./resources/txt-icon.png')} />
             <h1>{props.name}</h1>
         </div>
     );
 };
+
+const Html = (props) => {
+    return(
+        <div className="html" onDoubleClick={props.onDoubleClick}>
+            <img src={require('./resources/html-icon.png')} />
+            <h1>{props.name}</h1>
+        </div>
+    );
+};
+
 class Desktop extends React.Component {
     constructor(props) {
         super(props)
@@ -293,7 +296,8 @@ class Desktop extends React.Component {
             testFolderWindow:React.createRef(null),
             testFolderWindowShown:false,
             testPDFWindowShown:false,
-            zIndexes:{testFolder:1, testPDF:2}
+            welcomePage:true,
+            zIndexes:{testFolder:1, testPDF:2, welcomePage:3}
         };
     }
     render() {
@@ -321,6 +325,15 @@ class Desktop extends React.Component {
         const testFolderWindow = () => {
             return <Window name='testFolder' closeWindow={() => this.setState({testFolderWindowShown:false})} windowShown={this.state.testFolderWindowShown} guts={testPDF} zIndexes={this.state.zIndexes} updateZ={(indexDict) => setNewZIndex(indexDict)}/>
         }
+        const welcomeIcon = () =>{
+            const openFunc = () =>{
+                this.setState({welcomePage:true});
+            }
+            return <Html name='welcomePage' onDoubleClick={openFunc}/>
+        }
+        const welcomeWindow = () =>{
+            return <Window name='welcomePage' closeWindow={() => this.setState({welcomePage:false})} windowShown={this.state.welcomePage} guts={landingWindow} zIndexes={this.state.zIndexes} updateZ={(indexDict) => setNewZIndex(indexDict)}/>
+        }
 
         return (
             <div id='Desktop'>
@@ -328,6 +341,8 @@ class Desktop extends React.Component {
                 {testFolder()}
                 {testFolderWindow()}
                 {testPDFWindow()}
+                {welcomeIcon()}
+                {welcomeWindow()}
             </div>
         )
     };

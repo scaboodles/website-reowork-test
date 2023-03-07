@@ -13,6 +13,21 @@
     -ms-user-select: none;
     user-select: none;
 }
+p{
+    font-family: 'DotGothic16';
+    font-weight: normal;
+    font-style: normal;
+}
+h2{
+    font-family: 'DotGothic16';
+    font-weight: normal;
+    font-style: normal;
+}
+h3{
+    font-family: 'DotGothic16';
+    font-weight: normal;
+    font-style: normal;
+}
 h1{
     font-family: 'DotGothic16';
     font-weight: normal;
@@ -54,6 +69,7 @@ img {
 .closeButton:hover{
     background-image: url('./resources/close-button-hover.png');
 }
+
 .folder {
     cursor: url('./resources/pointer-clickable.png'), auto;
     position: absolute;
@@ -70,6 +86,7 @@ img {
     line-height: 10px;
     margin-top: -5px;    /* CORRECTION FOR LINE-HEIGHT */
 }
+
 .pdf {
     cursor: url('./resources/pointer-clickable.png'), auto;
     position: absolute;
@@ -79,6 +96,23 @@ img {
     pointer-events: none;
 }
 .pdf h1{
+    font-size: small;
+    text-align: center;
+    padding: 0%;
+
+    line-height: 10px;
+    margin-top: -5px;    /* CORRECTION FOR LINE-HEIGHT */
+}
+
+.html {
+    cursor: url('./resources/pointer-clickable.png'), auto;
+    position: absolute;
+    padding: 0%;
+}
+.html img{
+    pointer-events: none;
+}
+.html h1{
     font-size: small;
     text-align: center;
     padding: 0%;
@@ -213,12 +247,12 @@ img {
 }
 .windowContents{
     position: absolute;
-    height: calc(100% - 47px);
-    width: calc(100% - 26px);
+    height: calc(100% - 45.5px);
+    width: calc(100% - 25px);
     left: 12.5px;
     top: 32px;
-    border: 1px solid black;
     overflow-y: auto;
+    overflow-x: hidden;
     background-color: lightgray;
 }
 .hidden {
