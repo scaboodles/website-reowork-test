@@ -70,15 +70,15 @@ img {
     background-image: url('./resources/close-button-hover.png');
 }
 
-.folder {
+.icon {
     cursor: url('./resources/pointer-clickable.png'), auto;
     position: absolute;
     padding: 0%;
 }
-.folder img{
+.icon img{
     pointer-events: none;
 }
-.folder h1{
+.icon h1{
     font-size: small;
     text-align: center;
     padding: 0%;
@@ -87,39 +87,11 @@ img {
     margin-top: -5px;    /* CORRECTION FOR LINE-HEIGHT */
 }
 
-.pdf {
-    cursor: url('./resources/pointer-clickable.png'), auto;
-    position: absolute;
-    padding: 0%;
-}
-.pdf img{
-    pointer-events: none;
-}
-.pdf h1{
-    font-size: small;
-    text-align: center;
-    padding: 0%;
-
-    line-height: 10px;
-    margin-top: -5px;    /* CORRECTION FOR LINE-HEIGHT */
+#welcomeWindow{
+    left: 1%;
+    top: 75px;
 }
 
-.html {
-    cursor: url('./resources/pointer-clickable.png'), auto;
-    position: absolute;
-    padding: 0%;
-}
-.html img{
-    pointer-events: none;
-}
-.html h1{
-    font-size: small;
-    text-align: center;
-    padding: 0%;
-
-    line-height: 10px;
-    margin-top: -5px;    /* CORRECTION FOR LINE-HEIGHT */
-}
 .moving {
     cursor: url('./resources/pointer-move.png'), move;
 }

@@ -1,5 +1,4 @@
 import './landingWindowStyle.css';
-import { Folder } from '.';
 
 export function landingWindow(){
     return(

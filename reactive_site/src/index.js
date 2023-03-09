@@ -263,7 +263,7 @@ function Window(props){
 
 export const Folder = (props) => {
     return ( 
-        <div className="folder" onDoubleClick={props.onDoubleClick}>
+        <div className="icon" onDoubleClick={props.onDoubleClick}>
             <img src={require('./resources/folder.png')} />
             <h1>{props.name}</h1>
         </div>
@@ -272,7 +272,7 @@ export const Folder = (props) => {
 
 const Pdf  = (props) => {
     return(
-        <div className="pdf" onDoubleClick={props.onDoubleClick}>
+        <div className="icon" onDoubleClick={props.onDoubleClick}>
             <img src={require('./resources/txt-icon.png')} />
             <h1>{props.name}</h1>
         </div>
@@ -281,7 +281,7 @@ const Pdf  = (props) => {
 
 const Html = (props) => {
     return(
-        <div className="html" onDoubleClick={props.onDoubleClick}>
+        <div className="icon" id={props.id} onDoubleClick={props.onDoubleClick}>
             <img src={require('./resources/html-icon.png')} />
             <h1>{props.name}</h1>
         </div>
@@ -304,11 +304,13 @@ class Desktop extends React.Component {
         const setNewZIndex = (updatedIndexes) => {
             this.setState({zIndexes:updatedIndexes});
         }
+
         const GithubLink = () => {
             const img1 = require('./resources/gh-icon.png');
             const img2 = require('./resources/gh-icon-invert.png');
             return <a href='https://github.com/scaboodles' target="_blank"><img id='githubIcon' src={img1} onMouseOver={e => (e.currentTarget.src = img2)} onMouseOut={e => (e.currentTarget.src = img1)} alt="github link"></img></a>;
         }
+
         const testPDF = () => {
             return <Pdf name='testPDF' onDoubleClick={() => this.setState({testPDFWindowShown:true})}/>
         }
@@ -316,20 +318,22 @@ class Desktop extends React.Component {
             let str = () =><p>'this is a test of your emergency broadcast system'</p>;
             return <Window name='testPDF' closeWindow={()=> this.setState({testPDFWindowShown:false})} windowShown={this.state.testPDFWindowShown} guts={str} zIndexes={this.state.zIndexes} updateZ={(indexDict) => setNewZIndex(indexDict)}/>
         }
+
         const testFolder = () => {
             const openFunc = () => {
                 this.setState({testFolderWindowShown:true})
             }
-            return <Folder name='testFolder' onDoubleClick={openFunc}/>
+            return <Folder name='testFolder' onDoubleClick={openFunc} />
         }
         const testFolderWindow = () => {
             return <Window name='testFolder' closeWindow={() => this.setState({testFolderWindowShown:false})} windowShown={this.state.testFolderWindowShown} guts={testPDF} zIndexes={this.state.zIndexes} updateZ={(indexDict) => setNewZIndex(indexDict)}/>
         }
+
         const welcomeIcon = () =>{
             const openFunc = () =>{
                 this.setState({welcomePage:true});
             }
-            return <Html name='welcomePage' onDoubleClick={openFunc}/>
+            return <Html name='welcomePage' onDoubleClick={openFunc} id={"welcomeWindow"}/>
         }
         const welcomeWindow = () =>{
             return <Window name='welcomePage' closeWindow={() => this.setState({welcomePage:false})} windowShown={this.state.welcomePage} guts={landingWindow} zIndexes={this.state.zIndexes} updateZ={(indexDict) => setNewZIndex(indexDict)}/>
