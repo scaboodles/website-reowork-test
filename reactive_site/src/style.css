@@ -6,12 +6,21 @@
     font-style: normal;
     font-display: swap;
 }
-
+html, body, #root, .App {
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+}
 * {
     cursor: url('./resources/pointer-default.png'), auto;
     --resizer-thickness: 2.5px;
     -ms-user-select: none;
     user-select: none;
+}
+#Desktop{
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
 }
 p{
     font-family: 'DotGothic16';
@@ -177,16 +186,52 @@ img {
     bottom: 0;
     height: var(--resizer-thickness);
 }
+.resizer-tl{
+    cursor: url("./resources/pointer-topLeftBotRight-resize.png") 0 0, nw-resize;
+    height: 20px;
+    width: 20px;
+    left: -7px;
+    top: 0px;
+    border: none;
+    background-color: transparent;
+}
+.resizer-tr{
+    cursor: url("./resources/pointer-topRightBotLeft-resize.png") 0 0, ne-resize;
+    height: 20px;
+    width: 20px;
+    right: -7px;
+    top: 0px;
+    border: none;
+    background-color: transparent;
+}
+.resizer-br{
+    cursor: url("./resources/pointer-topLeftBotRight-resize.png") 0 0, nw-resize;
+    height: 20px;
+    width: 20px;
+    right: -5px;
+    bottom: -5px;
+    border: none;
+    background-color: transparent;
+}
+.resizer-bl{
+    cursor: url("./resources/pointer-topRightBotLeft-resize.png") 0 0, ne-resize;
+    height: 20px;
+    width: 20px;
+    left: -5px;
+    bottom: -5px;
+    border: none;
+    background-color: transparent;
+}
 .windowBorderLeft{
     position: absolute;
-    width: 10px;
+    width: 20px;
     height: calc(100% - 40px - var(--resizer-thickness));
     top: 30px;
     left: 2.5px;
 }
 .windowBorderRight{
     position: absolute;
-    width: 10px;
+    width: 20px;
     height: calc(100% - 40px - var(--resizer-thickness));
     top: 30px;
     right: 2.5px;

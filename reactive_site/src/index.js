@@ -3,20 +3,8 @@ import ReactCliDOM from 'react-dom/client';
 import ReactDOM from 'react-dom';
 import './style.css';
 import { clickAndDrag, suspendDrag } from './draggableDiv';
-import { getNumFromPx } from './helpers';
-import { landingWindow } from './landingPage';
-
-const findKeyOfmax = (dict) => {
-    let maxKey, maxValue = 0;
-    for(const [key, value] of Object.entries(dict)) {
-      if(value > maxValue) {
-        maxValue = value;
-        maxKey = key;
-      }
-    }
-
-    return maxKey;
-}
+import { getNumFromPx, sortedKeysByVal, findKeyOfmax} from './helpers';
+import { LandingWindow } from './landingPage';
 
 function Window(props){
     const moverRef = React.createRef(null)
@@ -25,15 +13,20 @@ function Window(props){
     const resizeRefL = React.createRef(null);
     const resizeRefR = React.createRef(null);
     const resizeRefB = React.createRef(null);
+    const resizeRefTL = React.createRef(null);
+    const resizeRefTR = React.createRef(null);
+    const resizeRefBL = React.createRef(null);
+    const resizeRefBR = React.createRef(null);
 
     const pairName = props.name;
-    const guts=props.guts;
+    const Guts=props.guts;
 
     const zIndexes=props.zIndexes;
 
     const minWidth = 280;
     const minHeight = 280;
-    let resizeOutOfBoundsOffset = 0;
+    let resizeOutOfBoundsOffsetY = 0;
+    let resizeOutOfBoundsOffsetX = 0;
 
     let windowShown = props.windowShown;
 
@@ -46,7 +39,6 @@ function Window(props){
         if(highestZ == pairName){
             return;
         }else{
-            console.log(zIndexes);
             let sortedKeys = sortedKeysByVal(zIndexes);
             let currIndex = sortedKeys.indexOf(pairName);
             sortedKeys.unshift(sortedKeys.splice(currIndex, 1)[0]);
@@ -57,20 +49,20 @@ function Window(props){
             props.updateZ(updatedZs);
         }
     }
-    
-    const sortedKeysByVal = (dict) =>{
-        let items =Object.keys(dict).map(
-            (key) => {return [key, dict[key]] });
-        items.sort(
-            (first, second) => { return first[1] = second[1]}
-        );
-        let keys = items.map(
-            (e) => { return e[0]}
-        );
 
-        return keys
-    }
-
+    /*
+    useEffect(() => {
+        if(pairName == 'welcomePage'){
+            if(props.firstRender){
+                let resizableEle = windowRef.current;
+                if(resizableEle){
+                    resizableEle.style.width = `${window.innerWidth}px`;
+                    resizableEle.style.height = `${window.innerHeight}px`;
+                }
+            }
+        }
+      }, []);
+      */
     useEffect(() => {
         if (windowRef.current != null) {
             //make moveable
@@ -82,6 +74,7 @@ function Window(props){
             //make resize handles
             const resizableEle = windowRef.current;
             const moveableContainer = moverRef.current;
+
 
             const styles = window.getComputedStyle(resizableEle);
 
@@ -96,15 +89,17 @@ function Window(props){
                 const dx = event.clientX - x;
                 x = event.clientX;
                 width = width + dx;
-                resizeOutOfBoundsOffset = minWidth - width;
-                if(resizeOutOfBoundsOffset <= 0){
-                    resizableEle.style.width = `${width}px`;
+                resizeOutOfBoundsOffsetX = minWidth - width;
+                if(resizeOutOfBoundsOffsetX <= 0){
+                    if(x<window.innerWidth){
+                        resizableEle.style.width = `${width}px`;
+                    }
                 }
             };
 
             const onMouseUpRightResize = (event) => {
                 document.removeEventListener("mousemove", onMouseMoveRightResize);
-                resizeOutOfBoundsOffset = 0;
+                resizeOutOfBoundsOffsetX = 0;
             }
 
             const onMouseDownRightResize = (event) => {
@@ -121,9 +116,11 @@ function Window(props){
                 const dx = event.clientX - x;
                 x = event.clientX;
                 width = width - dx;
-                resizeOutOfBoundsOffset = minWidth - width;
-                if(resizeOutOfBoundsOffset <= 0){
-                    resizableEle.style.width = `${width}px`;
+                resizeOutOfBoundsOffsetX = minWidth - width;
+                if(resizeOutOfBoundsOffsetX <= 0){
+                    if(x > 0){
+                        resizableEle.style.width = `${width}px`;
+                    }
                 }
             };
 
@@ -135,7 +132,7 @@ function Window(props){
                 resizableEle.style.left = 0;
                 resizableEle.style.right = `${getNumFromPx(resizedStyle.right) + tempLeft}px`
                 document.removeEventListener("mousemove", onMouseMoveLeftResize);
-                resizeOutOfBoundsOffset = 0;
+                resizeOutOfBoundsOffsetX = 0;
             }
 
             const onMouseDownLeftResize = (event) => {
@@ -151,9 +148,11 @@ function Window(props){
                 const dy = event.clientY - y;
                 y = event.clientY;
                 height = height - dy;
-                resizeOutOfBoundsOffset = minHeight - height;
-                if(resizeOutOfBoundsOffset <= 0){
-                    resizableEle.style.height = `${height}px`;
+                resizeOutOfBoundsOffsetY = minHeight - height;
+                if(resizeOutOfBoundsOffsetY <= 0){
+                    if(y > 0){
+                        resizableEle.style.height = `${height}px`;
+                    }
                 }
             };
 
@@ -165,7 +164,7 @@ function Window(props){
                 resizableEle.style.top = 0;
                 resizableEle.style.bottom = `${getNumFromPx(resizedStyle.bottom) + tempTop}px`
                 document.removeEventListener("mousemove", onMouseMoveTopResize);
-                resizeOutOfBoundsOffset = 0;
+                resizeOutOfBoundsOffsetY = 0;
             }
 
             const onMouseDownTopResize = (event) => {
@@ -182,15 +181,17 @@ function Window(props){
                 const dy = event.clientY - y;
                 y = event.clientY;
                 height = height + dy;
-                resizeOutOfBoundsOffset = minHeight - height;
-                if(resizeOutOfBoundsOffset <= 0){
-                    resizableEle.style.height = `${height}px`;
+                resizeOutOfBoundsOffsetY = minHeight - height;
+                if(resizeOutOfBoundsOffsetY <= 0){
+                    if(y < window.innerHeight){
+                        resizableEle.style.height = `${height}px`;
+                    }
                 }
             };
 
             const onMouseUpBottomResize = (event) => {
                 document.removeEventListener("mousemove", onMouseMoveBottomResize);
-                resizeOutOfBoundsOffset = 0;
+                resizeOutOfBoundsOffsetY = 0;
             }
 
             const onMouseDownBottomResize = (event) => {
@@ -200,6 +201,231 @@ function Window(props){
                 resizableEle.style.bottom = null;
                 document.addEventListener("mousemove", onMouseMoveBottomResize);
                 document.addEventListener("mouseup", onMouseUpBottomResize);
+            }
+
+            //Top Left
+            const onMouseMoveTopLeftResize = (event) => {
+                const dy = event.clientY - y;
+                const dx = event.clientX - x;
+
+                y = event.clientY;
+                x = event.clientX;
+
+                width = width - dx;
+                height = height - dy;
+
+                resizeOutOfBoundsOffsetY = minHeight - height;
+                if(resizeOutOfBoundsOffsetY <= 0){
+                    if(y>0){
+                        resizableEle.style.height = `${height}px`;
+                    }
+                }
+
+                resizeOutOfBoundsOffsetX = minWidth - width;
+                if(resizeOutOfBoundsOffsetX <= 0){
+                    if(x > 0){
+                        resizableEle.style.width = `${width}px`;
+                    }
+                }
+            }
+
+            const onMouseUpTopLeftResize = (event) => {
+                const resizedStyle = window.getComputedStyle(resizableEle);
+                const moverStyle = window.getComputedStyle(moveableContainer);
+
+                const tempLeft = getNumFromPx(resizedStyle.left);
+                moveableContainer.style.left = `${getNumFromPx(moverStyle.left) + tempLeft}px`;
+                resizableEle.style.left = 0;
+                resizableEle.style.right = `${getNumFromPx(resizedStyle.right) + tempLeft}px`
+
+                const tempTop = getNumFromPx(resizedStyle.top);
+                moveableContainer.style.top = `${getNumFromPx(moverStyle.top) + tempTop}px`;
+                resizableEle.style.top = 0;
+                resizableEle.style.bottom = `${getNumFromPx(resizedStyle.bottom) + tempTop}px`
+
+                resizeOutOfBoundsOffsetY = 0;
+                resizeOutOfBoundsOffsetX = 0;
+
+                document.removeEventListener("mousemove", onMouseMoveTopLeftResize);
+            }
+
+            const onMouseDownTopLeftResize = (event) => {
+                y = event.clientY;
+                x = event.clientX;
+
+                const styles = window.getComputedStyle(resizableEle);
+
+                resizableEle.style.top = null;
+                resizableEle.style.bottom = styles.bottom;
+
+                resizableEle.style.left = null; 
+                resizableEle.style.right = styles.right;
+
+                document.addEventListener("mousemove", onMouseMoveTopLeftResize);
+                document.addEventListener("mouseup", onMouseUpTopLeftResize);
+            }
+
+            //Top Right
+            const onMouseMoveTopRightResize = (event) => {
+                const dy = event.clientY - y;
+                const dx = event.clientX - x;
+
+                y = event.clientY;
+                x = event.clientX;
+
+                width = width + dx;
+                height = height - dy;
+
+                resizeOutOfBoundsOffsetY = minHeight - height;
+                if(resizeOutOfBoundsOffsetY <= 0){
+                    if(y > 0){
+                        resizableEle.style.height = `${height}px`;
+                    }
+                }
+
+                resizeOutOfBoundsOffsetX = minWidth - width;
+                if(resizeOutOfBoundsOffsetX <= 0){
+                    if(x < window.innerWidth){
+                        resizableEle.style.width = `${width}px`;
+                    }
+                }
+            }
+
+            const onMouseUpTopRightResize = (event) => {
+                const resizedStyle = window.getComputedStyle(resizableEle);
+                const moverStyle = window.getComputedStyle(moveableContainer);
+
+                const tempTop = getNumFromPx(resizedStyle.top);
+                moveableContainer.style.top = `${getNumFromPx(moverStyle.top) + tempTop}px`;
+                resizableEle.style.top = 0;
+                resizableEle.style.bottom = `${getNumFromPx(resizedStyle.bottom) + tempTop}px`;
+
+                resizeOutOfBoundsOffsetY = 0;
+                resizeOutOfBoundsOffsetX = 0;
+
+                document.removeEventListener("mousemove", onMouseMoveTopRightResize);
+            }
+
+            const onMouseDownTopRightResize = (event) => {
+                y = event.clientY;
+                x = event.clientX;
+
+                const styles = window.getComputedStyle(resizableEle);
+
+                resizableEle.style.top = null;
+                resizableEle.style.bottom = styles.bottom;
+
+                resizableEle.style.left = styles.left; 
+                resizableEle.style.right = null;
+
+                document.addEventListener("mousemove", onMouseMoveTopRightResize);
+                document.addEventListener("mouseup", onMouseUpTopRightResize);
+            }
+
+            //Bot Right
+            const onMouseMoveBottomRightResize = (event) => {
+                const dy = event.clientY - y;
+                const dx = event.clientX - x;
+
+                y = event.clientY;
+                x = event.clientX;
+
+                width = width + dx;
+                height = height + dy;
+
+                resizeOutOfBoundsOffsetY = minHeight - height;
+                if(resizeOutOfBoundsOffsetY <= 0){
+                    if(y < window.innerHeight){
+                        resizableEle.style.height = `${height}px`;
+                    }
+                }
+
+                resizeOutOfBoundsOffsetX = minWidth - width;
+                if(resizeOutOfBoundsOffsetX <= 0){
+                    if(x < window.innerWidth){
+                        resizableEle.style.width = `${width}px`;
+                    }
+                }
+            }
+
+            const onMouseUpBottomRightResize = (event) => {
+                resizeOutOfBoundsOffsetY = 0;
+                resizeOutOfBoundsOffsetX = 0;
+
+                document.removeEventListener("mousemove", onMouseMoveBottomRightResize);
+            }
+
+            const onMouseDownBottomRightResize = (event) => {
+                y = event.clientY;
+                x = event.clientX;
+
+                const styles = window.getComputedStyle(resizableEle);
+
+                resizableEle.style.top = styles.top;
+                resizableEle.style.bottom = null;
+
+                resizableEle.style.left = styles.left; 
+                resizableEle.style.right = null;
+
+                document.addEventListener("mousemove", onMouseMoveBottomRightResize);
+                document.addEventListener("mouseup", onMouseUpBottomRightResize);
+            }
+
+            //Bot left
+            const onMouseMoveBottomLeftResize = (event) => {
+                const dy = event.clientY - y;
+                const dx = event.clientX - x;
+
+                y = event.clientY;
+                x = event.clientX;
+
+                width = width - dx;
+                height = height + dy;
+
+                resizeOutOfBoundsOffsetY = minHeight - height;
+                if(resizeOutOfBoundsOffsetY <= 0){
+                    if(y < window.innerHeight){
+                        resizableEle.style.height = `${height}px`;
+                    }
+                }
+
+                resizeOutOfBoundsOffsetX = minWidth - width;
+                if(resizeOutOfBoundsOffsetX <= 0){
+                    if(x > 0){
+                        resizableEle.style.width = `${width}px`;
+                    }
+                }
+            }
+
+            const onMouseUpBottomLeftResize = (event) => {
+                const resizedStyle = window.getComputedStyle(resizableEle);
+                const moverStyle = window.getComputedStyle(moveableContainer);
+
+                const tempLeft = getNumFromPx(resizedStyle.left);
+                moveableContainer.style.left = `${getNumFromPx(moverStyle.left) + tempLeft}px`;
+                resizableEle.style.left = 0;
+                resizableEle.style.right = `${getNumFromPx(resizedStyle.right) + tempLeft}px`
+
+                resizeOutOfBoundsOffsetY = 0;
+                resizeOutOfBoundsOffsetX = 0;
+
+                document.removeEventListener("mousemove", onMouseMoveBottomLeftResize);
+            }
+
+            const onMouseDownBottomLeftResize = (event) => {
+                y = event.clientY;
+                x = event.clientX;
+
+                const styles = window.getComputedStyle(resizableEle);
+
+                resizableEle.style.top = styles.top;
+                resizableEle.style.bottom = null;
+
+                resizableEle.style.left = null; 
+                resizableEle.style.right = styles.right;
+
+                document.addEventListener("mousemove", onMouseMoveBottomLeftResize);
+                document.addEventListener("mouseup", onMouseUpBottomLeftResize);
             }
 
             //add event listeners
@@ -216,12 +442,28 @@ function Window(props){
             const resizerBottom = resizeRefB.current;
             resizerBottom.addEventListener("mousedown", onMouseDownBottomResize);
 
+            const resizerTopLeft = resizeRefTL.current;
+            resizerTopLeft.addEventListener("mousedown", onMouseDownTopLeftResize);
+
+            const resizerTopRight = resizeRefTR.current;
+            resizerTopRight.addEventListener("mousedown", onMouseDownTopRightResize);
+
+            const resizerBottomRight = resizeRefBR.current;
+            resizerBottomRight.addEventListener("mousedown", onMouseDownBottomRightResize);
+
+            const resizerBottomLeft = resizeRefBL.current;
+            resizerBottomLeft.addEventListener("mousedown", onMouseDownBottomLeftResize);
+
             //cleanup event listeners
             return () => {
                 resizerRight.removeEventListener("mousedown", onMouseDownRightResize);
                 resizerLeft.removeEventListener("mousedown", onMouseDownLeftResize);
                 resizerTop.removeEventListener("mousedown", onMouseDownTopResize);
                 resizerBottom.removeEventListener("mousedown", onMouseDownBottomResize);
+                resizerTopLeft.removeEventListener("mousedown", onMouseDownTopLeftResize);
+                resizerTopRight.removeEventListener("mousedown", onMouseDownTopRightResize);
+                resizerBottomLeft.removeEventListener("mousedown", onMouseDownBottomLeftResize);
+                resizerBottomRight.removeEventListener("mousedown", onMouseDownBottomRightResize);
             }
         };
     });
@@ -233,6 +475,10 @@ function Window(props){
                     <div ref={resizeRefL} className="resizer resizer-l"></div>
                     <div ref={resizeRefR} className="resizer resizer-r"></div>
                     <div ref={resizeRefB} className="resizer resizer-b"></div>
+                    <div ref={resizeRefTL} className="resizer resizer-tl"/>
+                    <div ref={resizeRefTR} className="resizer resizer-tr"/>
+                    <div ref={resizeRefBL} className="resizer resizer-bl"/>
+                    <div ref={resizeRefBR} className="resizer resizer-br"/>
 
                     <div className="windowHead" id={`${pairName}Head`}>
                         <img src={require('./resources/window-head-left.png')} className="windowHeadBorder windowHeadBorderLeft"></img>
@@ -246,7 +492,7 @@ function Window(props){
                     <img src={require('./resources/window-border.png')} className="windowBorderRight"></img>
 
                     <div className='windowContents'>
-                        {guts()}
+                        <Guts/>
                     </div>
 
                     <div className='windowBorderBottomContainer'>
@@ -297,12 +543,30 @@ class Desktop extends React.Component {
             testFolderWindowShown:false,
             testPDFWindowShown:false,
             welcomePage:true,
-            zIndexes:{testFolder:1, testPDF:2, welcomePage:3}
+            zIndexes:{testFolder:1, testPDF:2, welcomePage:3},
+            firstWelcome:true
         };
     }
     render() {
         const setNewZIndex = (updatedIndexes) => {
             this.setState({zIndexes:updatedIndexes});
+        }
+
+        const updateZIndexes = (name) =>{
+            let zIndexes = this.state.zIndexes;
+            const highestZ=findKeyOfmax(zIndexes);
+            if(highestZ == name){
+                return;
+            }else{
+                let sortedKeys = sortedKeysByVal(zIndexes);
+                let currIndex = sortedKeys.indexOf(name);
+                sortedKeys.unshift(sortedKeys.splice(currIndex, 1)[0]);
+                let updatedZs = {};
+                for(let i=0; i<sortedKeys.length; i++){
+                    updatedZs[sortedKeys[i]] = sortedKeys.length - i + 1;
+                }
+                setNewZIndex(updatedZs);
+            }
         }
 
         const GithubLink = () => {
@@ -311,45 +575,59 @@ class Desktop extends React.Component {
             return <a href='https://github.com/scaboodles' target="_blank"><img id='githubIcon' src={img1} onMouseOver={e => (e.currentTarget.src = img2)} onMouseOut={e => (e.currentTarget.src = img1)} alt="github link"></img></a>;
         }
 
-        const testPDF = () => {
-            return <Pdf name='testPDF' onDoubleClick={() => this.setState({testPDFWindowShown:true})}/>
+        const TestPDF = () => {
+            const openFunc = () =>{
+                this.setState({testPDFWindowShown:true})
+                updateZIndexes('testPDF');
+            }
+            return <Pdf name='testPDF' onDoubleClick={openFunc}/>
         }
-        const testPDFWindow = () =>{
+        const TestPDFWindow = () =>{
             let str = () =><p>'this is a test of your emergency broadcast system'</p>;
             return <Window name='testPDF' closeWindow={()=> this.setState({testPDFWindowShown:false})} windowShown={this.state.testPDFWindowShown} guts={str} zIndexes={this.state.zIndexes} updateZ={(indexDict) => setNewZIndex(indexDict)}/>
         }
 
-        const testFolder = () => {
+        const TestFolder = () => {
             const openFunc = () => {
-                this.setState({testFolderWindowShown:true})
+                this.setState({testFolderWindowShown:true});
+                updateZIndexes('testFolder');
             }
             return <Folder name='testFolder' onDoubleClick={openFunc} />
         }
-        const testFolderWindow = () => {
-            return <Window name='testFolder' closeWindow={() => this.setState({testFolderWindowShown:false})} windowShown={this.state.testFolderWindowShown} guts={testPDF} zIndexes={this.state.zIndexes} updateZ={(indexDict) => setNewZIndex(indexDict)}/>
+        const TestFolderWindow = () => {
+            return <Window name='testFolder' closeWindow={() => this.setState({testFolderWindowShown:false})} windowShown={this.state.testFolderWindowShown} guts={() => <TestPDF/>} zIndexes={this.state.zIndexes} updateZ={(indexDict) => setNewZIndex(indexDict)}/>
         }
 
-        const welcomeIcon = () =>{
+        const WelcomeIcon = () =>{
             const openFunc = () =>{
                 this.setState({welcomePage:true});
+                updateZIndexes('welcomePage');
             }
             return <Html name='welcomePage' onDoubleClick={openFunc} id={"welcomeWindow"}/>
         }
-        const welcomeWindow = () =>{
-            return <Window name='welcomePage' closeWindow={() => this.setState({welcomePage:false})} windowShown={this.state.welcomePage} guts={landingWindow} zIndexes={this.state.zIndexes} updateZ={(indexDict) => setNewZIndex(indexDict)}/>
+        const WelcomeWindow = () =>{
+            const toggleFirst = () =>{
+                this.setState({firstWelcome:false});
+            }
+            const closeFunc = () => {
+                this.setState({welcomePage:false});
+                toggleFirst();
+            }
+            return <Window name='welcomePage' closeWindow={closeFunc} windowShown={this.state.welcomePage} guts={ () => <LandingWindow/>} zIndexes={this.state.zIndexes} updateZ={(indexDict) => setNewZIndex(indexDict)} firstRender={this.state.firstWelcome} toggleFirst={toggleFirst}/>
         }
 
         return (
             <div id='Desktop'>
-                {GithubLink()}
-                {testFolder()}
-                {testFolderWindow()}
-                {testPDFWindow()}
-                {welcomeIcon()}
-                {welcomeWindow()}
+                <GithubLink/>
+                <TestFolder/>
+                <TestFolderWindow/>
+                <TestPDFWindow/>
+                <WelcomeIcon/>
+                <WelcomeWindow/>
             </div>
         )
     };
 }
+
 const root = ReactCliDOM.createRoot(document.getElementById("root"));
 root.render(<Desktop />);

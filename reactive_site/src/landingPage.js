@@ -1,6 +1,6 @@
 import './landingWindowStyle.css';
 
-export function landingWindow(){
+export function LandingWindow(){
     return(
         <div id='overrideGuts'>
             <div id='header'>
@@ -8,13 +8,14 @@ export function landingWindow(){
             </div>
             <div id='bio' className='dialog'>
                 <p>
-                    I am a rising Junior in the engineering program at George Washington University. I'm looking for an
-                    an unpaid intership for the summer of 2023 building software. I am proficient in python, java, and javascript, 
+                    My name is Owen Wolff. I am a rising Junior in the engineering program at George Washington University. I'm looking for an
+                    an unpaid intership for the summer of 2023 building software. I am proficient in python, java, and javascript. 
                     I'm a quick learner, and I make decent coffee.
                 </p>
+                <img className='pixelMoji' src={require('./resources/sipping.gif')}/>
             </div>
             <div className='dashes'>----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------</div>
-            <h3>
+            <h3 className='question'>
                 So what is this website?
             </h3>
             <div className='dashes'>----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------</div>
@@ -25,7 +26,7 @@ export function landingWindow(){
                 </p>
             </div>
             <div className='dashes'>----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------</div>
-            <h3>
+            <h3 className='question'>
                 Ok, but what is it right now?
             </h3>
             <div className='dashes'>----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------</div>
@@ -42,6 +43,7 @@ export function landingWindow(){
                     <br/><br/>
                     Please, close this window and poke around a little bit! (Just dont open the dev console)
                 </p> 
+                <img className='pixelMoji topMargin' src={require('./resources/typin.gif')}/>
             </div>
         </div>
     );

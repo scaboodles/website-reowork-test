@@ -24,7 +24,24 @@
 }
 .dialog p{
     width: 60%;
+    margin-right: 3%;
+}
+.question{
+    margin-left: 3%;
 }
 #header{
     background-color: skyblue;
+}
+#header h1{
+    margin-left: 5%;
+}
+.pixelMoji{
+    height: 160px;
+    width: auto;
+    margin-bottom: 5%;
+    margin-right: 10%;
+}
+.topMargin{
+    margin-top: 10%;
+    margin-left: 10%;
 }

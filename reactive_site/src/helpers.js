@@ -9,4 +9,29 @@ export function getOffset(el) {
       left: rect.left + window.scrollX,
       top: rect.top + window.scrollY
     };
-  }
+}
+
+
+export function sortedKeysByVal(dict){
+    let items =Object.keys(dict).map(
+        (key) => {return [key, dict[key]] });
+    items.sort(
+        (first, second) => { return first[1] = second[1]}
+    );
+    let keys = items.map(
+        (e) => { return e[0]}
+    );
+    return keys
+}
+
+
+export function findKeyOfmax(dict){
+    let maxKey, maxValue = 0;
+    for(const [key, value] of Object.entries(dict)) {
+      if(value > maxValue) {
+        maxValue = value;
+        maxKey = key;
+      }
+    }
+    return maxKey;
+}
