@@ -63,7 +63,7 @@ img {
     cursor: url('./resources/pointer-clickable.png'), auto;
 }
 .closeButton{
-    position: inherit;
+    position: absolute;
     cursor: url('./resources/pointer-clickable.png'), auto;
     background-image: url('./resources/close-button.png');
     height: 16px;
@@ -80,7 +80,7 @@ img {
 }
 
 .maximizeButton{
-    position: inherit;
+    position: absolute;
     cursor: url('./resources/pointer-clickable.png'), auto;
     background-image: url('./resources/maximize-button.png');
     height: 16px;
@@ -89,16 +89,15 @@ img {
     z-index: 3;
     background-color: transparent;
     border: none;
-    left: 25px;
+    left: 45px;
     top: 7px;
-    margin-left: 7px;
 }
 .maximizeButton:hover{
     background-image: url('./resources/maximize-button-hover.png');
 }
 
 .minimizeButton{
-    position: inherit;
+    position: absolute;
     cursor: url('./resources/pointer-clickable.png'), auto;
     background-image: url('./resources/maximize-button.png');
     height: 16px;
@@ -107,9 +106,8 @@ img {
     z-index: 3;
     background-color: transparent;
     border: none;
-    left: 25px;
+    left: 45px;
     top: 7px;
-    margin-left: 7px;
 }
 .minimizeButton:hover{
     background-image: url('./resources/minimize-button-hover.png');

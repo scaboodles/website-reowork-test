@@ -11,6 +11,8 @@ const defaultDimensions = {
     width: 860,
     height: 440
 };
+const defaultPosition = {x:15, y:15};
+const maximizedPosition = {x:5, y:5};
 
 function Window(props){
     const moverRef = React.createRef(null)
@@ -41,6 +43,15 @@ function Window(props){
             props.updateHeight(parseInt(styles.height,10));
         }
     }
+    const updatePositions = () =>{
+        const moverMounted = moverRef.current;
+        if(moverMounted){
+            console.log("updated");
+            const styles = window.getComputedStyle(moverMounted);
+            let newPos = {x:getNumFromPx(styles.left), y:getNumFromPx(styles.top)};
+            props.setPos(newPos);
+        }
+    }
 
     const minWidth = 280;
     const minHeight = 280;
@@ -58,6 +69,7 @@ function Window(props){
     const maximizeWindow = (() => {
        props.updateHeight(window.innerHeight - maxDimensionsOffset.height);
        props.updateWidth(window.innerWidth - maxDimensionsOffset.width);
+       props.setPos(maximizedPosition);
     })
 
     const minimizeWindow = (() => {
@@ -92,6 +104,11 @@ function Window(props){
         if(mounted){
             mounted.style.width = `${props.width}px`
             mounted.style.height = `${props.height}px`
+        }
+        const moverMounted = moverRef.current;
+        if(moverMounted){
+            moverMounted.style.top = `${props.position.y}px`;
+            moverMounted.style.left = `${props.position.x}px`;
         }
     },[])
       
@@ -508,6 +525,8 @@ function Window(props){
             const resizerBottomLeft = resizeRefBL.current;
             resizerBottomLeft.addEventListener("mousedown", onMouseDownBottomLeftResize);
 
+            moveableContainer.addEventListener("mousedown", updateZIndexes);
+
             //cleanup event listeners
             return () => {
                 resizerRight.removeEventListener("mousedown", onMouseDownRightResize);
@@ -518,13 +537,14 @@ function Window(props){
                 resizerTopRight.removeEventListener("mousedown", onMouseDownTopRightResize);
                 resizerBottomLeft.removeEventListener("mousedown", onMouseDownBottomLeftResize);
                 resizerBottomRight.removeEventListener("mousedown", onMouseDownBottomRightResize);
+                moveableContainer.addEventListener("mousedown", updateZIndexes);
             }
         };
     });
     if (windowShown) {
         return (
             <div ref={moverRef} className="mover" id={pairName}>
-                <div className="window" ref={windowRef} onMouseDown={() => updateZIndexes()}>
+                <div className="window" ref={windowRef} >
                     <div ref={resizeRefT} className="resizer resizer-t"></div>
                     <div ref={resizeRefL} className="resizer resizer-l"></div>
                     <div ref={resizeRefR} className="resizer resizer-r"></div>
@@ -534,14 +554,14 @@ function Window(props){
                     <div ref={resizeRefBL} className="resizer resizer-bl"/>
                     <div ref={resizeRefBR} className="resizer resizer-br"/>
 
-                    <div className="windowHead" id={`${pairName}Head`}>
+                    <div className="windowHead" id={`${pairName}Head`} onMouseUp={updatePositions}>
                         <img src={require('./resources/window-head-left.png')} className="windowHeadBorder windowHeadBorderLeft"></img>
-                        <button className='closeButton' type='button' onClick={closeFunc}></button>
-                        <MaximizeButton/>
                         <img src={require('./resources/window-head-middle.png')} className="windowHeadBorder windowHeadBorderMid"></img>
                         <h1>{pairName}</h1>
                         <img src={require('./resources/window-head-right.png')} className="windowHeadBorder windowHeadBorderRight"></img>
                     </div>
+                    <button className='closeButton' type='button' onClick={closeFunc}></button>
+                    <MaximizeButton/>
                     
                     <img src={require('./resources/window-border.png')} className="windowBorderLeft"></img>
                     <img src={require('./resources/window-border.png')} className="windowBorderRight"></img>
@@ -600,12 +620,15 @@ class Desktop extends React.Component {
             testFolderWindowShown:false,
             testFolderWindowWidth:defaultDimensions.width,
             testFolderWindowHeight:defaultDimensions.height,
+            testFolderWindowPosition:defaultPosition,
             testPDFWindowShown:false,
             testPDFWindowWidth:defaultDimensions.width,
             testPDFWindowHeight:defaultDimensions.height,
+            testPDFWindowPosition: defaultPosition,
             welcomePageShown:true,
             welcomePageWidth:maxDimensions.width,
             welcomePageHeight:maxDimensions.height,
+            welcomePagePosition:maximizedPosition,
             zIndexes:{testFolder:1, testPDF:2, welcomePage:3}
         };
     }
@@ -651,8 +674,11 @@ class Desktop extends React.Component {
             const setHeight = (newHeight) =>{
                 this.setState({testPDFWindowHeight:newHeight});
             }
+            const setPos = (newPos) =>{
+                this.setState({testPDFWindowPosition:newPos});
+            }
             let str = () =><p>'this is a test of your emergency broadcast system'</p>;
-            return <Window name='testPDF' closeWindow={()=> this.setState({testPDFWindowShown:false})} windowShown={this.state.testPDFWindowShown} guts={str} zIndexes={this.state.zIndexes} updateZ={(indexDict) => setNewZIndex(indexDict)} width={this.state.testPDFWindowWidth} height={this.state.testPDFWindowHeight} updateWidth={setWidth} updateHeight={setHeight}/>
+            return <Window name='testPDF' closeWindow={()=> this.setState({testPDFWindowShown:false})} windowShown={this.state.testPDFWindowShown} guts={str} zIndexes={this.state.zIndexes} updateZ={(indexDict) => setNewZIndex(indexDict)} width={this.state.testPDFWindowWidth} height={this.state.testPDFWindowHeight} updateWidth={setWidth} updateHeight={setHeight} position={this.state.testPDFWindowPosition} setPos={setPos}/>
         }
 
         const TestFolder = () => {
@@ -669,7 +695,10 @@ class Desktop extends React.Component {
             const setHeight = (newHeight) =>{
                 this.setState({testFolderWindowHeight:newHeight});
             }
-            return <Window name='testFolder' closeWindow={() => this.setState({testFolderWindowShown:false})} windowShown={this.state.testFolderWindowShown} guts={() => <TestPDF/>} zIndexes={this.state.zIndexes} updateZ={(indexDict) => setNewZIndex(indexDict)} width={this.state.testFolderWindowWidth} height={this.state.testFolderWindowHeight} updateWidth={setWidth} updateHeight={setHeight}/>
+            const setPos = (newPos) =>{
+                this.setState({testFolderWindowPosition:newPos});
+            }
+            return <Window name='testFolder' closeWindow={() => this.setState({testFolderWindowShown:false})} windowShown={this.state.testFolderWindowShown} guts={() => <TestPDF/>} zIndexes={this.state.zIndexes} updateZ={(indexDict) => setNewZIndex(indexDict)} width={this.state.testFolderWindowWidth} height={this.state.testFolderWindowHeight} updateWidth={setWidth} updateHeight={setHeight} position={this.state.testFolderWindowPosition} setPos={setPos}/>
         }
 
         const WelcomeIcon = () =>{
@@ -689,7 +718,10 @@ class Desktop extends React.Component {
             const setHeight = (newHeight) =>{
                 this.setState({welcomePageHeight:newHeight});
             }
-            return <Window name='welcomePage' closeWindow={closeFunc} windowShown={this.state.welcomePageShown} guts={ () => <LandingWindow/>} zIndexes={this.state.zIndexes} updateZ={(indexDict) => setNewZIndex(indexDict)} width={this.state.welcomePageWidth} height={this.state.welcomePageHeight} updateWidth={setWidth} updateHeight={setHeight}/>
+            const setPos = (newPos) =>{
+                this.setState({welcomePagePosition:newPos});
+            }
+            return <Window name='welcomePage' closeWindow={closeFunc} windowShown={this.state.welcomePageShown} guts={ () => <LandingWindow/>} zIndexes={this.state.zIndexes} updateZ={(indexDict) => setNewZIndex(indexDict)} width={this.state.welcomePageWidth} height={this.state.welcomePageHeight} updateWidth={setWidth} updateHeight={setHeight} position={this.state.welcomePagePosition} setPos={setPos}/>
         }
 
         return (
