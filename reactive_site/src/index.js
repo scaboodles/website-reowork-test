@@ -6,6 +6,12 @@ import { clickAndDrag, suspendDrag } from './draggableDiv';
 import { getNumFromPx, sortedKeysByVal, findKeyOfmax} from './helpers';
 import { LandingWindow } from './landingPage';
 
+const maxDimensionsOffset = {width:10,height:10};
+const defaultDimensions = {
+    width: 860,
+    height: 440
+};
+
 function Window(props){
     const moverRef = React.createRef(null)
     const windowRef = React.createRef(null);
@@ -23,6 +29,19 @@ function Window(props){
 
     const zIndexes=props.zIndexes;
 
+    const updateWidth = () => {
+        if(windowRef.current){
+            const styles = window.getComputedStyle(windowRef.current);
+            props.updateWidth(parseInt(styles.width,10));
+        }
+    }
+    const updateHeight = () =>{
+        if(windowRef.current){
+            const styles = window.getComputedStyle(windowRef.current);
+            props.updateHeight(parseInt(styles.height,10));
+        }
+    }
+
     const minWidth = 280;
     const minHeight = 280;
     let resizeOutOfBoundsOffsetY = 0;
@@ -30,9 +49,27 @@ function Window(props){
 
     let windowShown = props.windowShown;
 
+    let MaximizeButton = null;
+
     const closeFunc = (() => {
         props.closeWindow();
     });
+
+    const maximizeWindow = (() => {
+       props.updateHeight(window.innerHeight - maxDimensionsOffset.height);
+       props.updateWidth(window.innerWidth - maxDimensionsOffset.width);
+    })
+
+    const minimizeWindow = (() => {
+        props.updateHeight(defaultDimensions.height);
+        props.updateWidth(defaultDimensions.width);
+    })
+
+    if(props.width >= window.innerWidth - 50 && props.height >= window.innerHeight - 50){
+        MaximizeButton = () => <button className='minimizeButton' type='button' onClick={minimizeWindow}></button>;
+    }else{
+        MaximizeButton = () => <button className='maximizeButton' type='button' onClick={maximizeWindow}></button>;
+    }
 
     const updateZIndexes = () =>{
         const highestZ=findKeyOfmax(zIndexes);
@@ -50,19 +87,14 @@ function Window(props){
         }
     }
 
-    /*
     useEffect(() => {
-        if(pairName == 'welcomePage'){
-            if(props.firstRender){
-                let resizableEle = windowRef.current;
-                if(resizableEle){
-                    resizableEle.style.width = `${window.innerWidth}px`;
-                    resizableEle.style.height = `${window.innerHeight}px`;
-                }
-            }
+        const mounted = windowRef.current;
+        if(mounted){
+            mounted.style.width = `${props.width}px`
+            mounted.style.height = `${props.height}px`
         }
-      }, []);
-      */
+    },[])
+      
     useEffect(() => {
         if (windowRef.current != null) {
             //make moveable
@@ -100,6 +132,8 @@ function Window(props){
             const onMouseUpRightResize = (event) => {
                 document.removeEventListener("mousemove", onMouseMoveRightResize);
                 resizeOutOfBoundsOffsetX = 0;
+
+                updateWidth();
             }
 
             const onMouseDownRightResize = (event) => {
@@ -133,6 +167,8 @@ function Window(props){
                 resizableEle.style.right = `${getNumFromPx(resizedStyle.right) + tempLeft}px`
                 document.removeEventListener("mousemove", onMouseMoveLeftResize);
                 resizeOutOfBoundsOffsetX = 0;
+
+                updateWidth();
             }
 
             const onMouseDownLeftResize = (event) => {
@@ -143,6 +179,7 @@ function Window(props){
                 document.addEventListener("mousemove", onMouseMoveLeftResize);
                 document.addEventListener("mouseup", onMouseUpLeftResize);
             }
+            
             //top
             const onMouseMoveTopResize = (event) => {
                 const dy = event.clientY - y;
@@ -165,6 +202,8 @@ function Window(props){
                 resizableEle.style.bottom = `${getNumFromPx(resizedStyle.bottom) + tempTop}px`
                 document.removeEventListener("mousemove", onMouseMoveTopResize);
                 resizeOutOfBoundsOffsetY = 0;
+
+                updateHeight();
             }
 
             const onMouseDownTopResize = (event) => {
@@ -176,6 +215,7 @@ function Window(props){
                 document.addEventListener("mouseup", onMouseUpTopResize);
                 windowRef.current.classList.add("resizingTop");
             }
+
             //Bottom
             const onMouseMoveBottomResize = (event) => {
                 const dy = event.clientY - y;
@@ -192,6 +232,8 @@ function Window(props){
             const onMouseUpBottomResize = (event) => {
                 document.removeEventListener("mousemove", onMouseMoveBottomResize);
                 resizeOutOfBoundsOffsetY = 0;
+
+                updateHeight();
             }
 
             const onMouseDownBottomResize = (event) => {
@@ -247,6 +289,9 @@ function Window(props){
                 resizeOutOfBoundsOffsetX = 0;
 
                 document.removeEventListener("mousemove", onMouseMoveTopLeftResize);
+
+                updateHeight();
+                updateWidth();
             }
 
             const onMouseDownTopLeftResize = (event) => {
@@ -304,6 +349,9 @@ function Window(props){
                 resizeOutOfBoundsOffsetX = 0;
 
                 document.removeEventListener("mousemove", onMouseMoveTopRightResize);
+
+                updateHeight();
+                updateWidth();
             }
 
             const onMouseDownTopRightResize = (event) => {
@@ -353,6 +401,9 @@ function Window(props){
                 resizeOutOfBoundsOffsetX = 0;
 
                 document.removeEventListener("mousemove", onMouseMoveBottomRightResize);
+
+                updateHeight();
+                updateWidth();
             }
 
             const onMouseDownBottomRightResize = (event) => {
@@ -410,6 +461,9 @@ function Window(props){
                 resizeOutOfBoundsOffsetX = 0;
 
                 document.removeEventListener("mousemove", onMouseMoveBottomLeftResize);
+
+                updateHeight();
+                updateWidth();
             }
 
             const onMouseDownBottomLeftResize = (event) => {
@@ -483,6 +537,7 @@ function Window(props){
                     <div className="windowHead" id={`${pairName}Head`}>
                         <img src={require('./resources/window-head-left.png')} className="windowHeadBorder windowHeadBorderLeft"></img>
                         <button className='closeButton' type='button' onClick={closeFunc}></button>
+                        <MaximizeButton/>
                         <img src={require('./resources/window-head-middle.png')} className="windowHeadBorder windowHeadBorderMid"></img>
                         <h1>{pairName}</h1>
                         <img src={require('./resources/window-head-right.png')} className="windowHeadBorder windowHeadBorderRight"></img>
@@ -537,14 +592,21 @@ const Html = (props) => {
 class Desktop extends React.Component {
     constructor(props) {
         super(props)
+        let maxDimensions = {
+            width:window.innerWidth-maxDimensionsOffset.width,
+            height:window.innerHeight-maxDimensionsOffset.height
+        };
         this.state = {
-            testFolderRef:React.createRef(null), 
-            testFolderWindow:React.createRef(null),
             testFolderWindowShown:false,
+            testFolderWindowWidth:defaultDimensions.width,
+            testFolderWindowHeight:defaultDimensions.height,
             testPDFWindowShown:false,
-            welcomePage:true,
-            zIndexes:{testFolder:1, testPDF:2, welcomePage:3},
-            firstWelcome:true
+            testPDFWindowWidth:defaultDimensions.width,
+            testPDFWindowHeight:defaultDimensions.height,
+            welcomePageShown:true,
+            welcomePageWidth:maxDimensions.width,
+            welcomePageHeight:maxDimensions.height,
+            zIndexes:{testFolder:1, testPDF:2, welcomePage:3}
         };
     }
     render() {
@@ -583,8 +645,14 @@ class Desktop extends React.Component {
             return <Pdf name='testPDF' onDoubleClick={openFunc}/>
         }
         const TestPDFWindow = () =>{
+            const setWidth = (newWidth) =>{
+                this.setState({testPDFWindowWidth:newWidth});
+            }
+            const setHeight = (newHeight) =>{
+                this.setState({testPDFWindowHeight:newHeight});
+            }
             let str = () =><p>'this is a test of your emergency broadcast system'</p>;
-            return <Window name='testPDF' closeWindow={()=> this.setState({testPDFWindowShown:false})} windowShown={this.state.testPDFWindowShown} guts={str} zIndexes={this.state.zIndexes} updateZ={(indexDict) => setNewZIndex(indexDict)}/>
+            return <Window name='testPDF' closeWindow={()=> this.setState({testPDFWindowShown:false})} windowShown={this.state.testPDFWindowShown} guts={str} zIndexes={this.state.zIndexes} updateZ={(indexDict) => setNewZIndex(indexDict)} width={this.state.testPDFWindowWidth} height={this.state.testPDFWindowHeight} updateWidth={setWidth} updateHeight={setHeight}/>
         }
 
         const TestFolder = () => {
@@ -595,25 +663,33 @@ class Desktop extends React.Component {
             return <Folder name='testFolder' onDoubleClick={openFunc} />
         }
         const TestFolderWindow = () => {
-            return <Window name='testFolder' closeWindow={() => this.setState({testFolderWindowShown:false})} windowShown={this.state.testFolderWindowShown} guts={() => <TestPDF/>} zIndexes={this.state.zIndexes} updateZ={(indexDict) => setNewZIndex(indexDict)}/>
+            const setWidth = (newWidth) =>{
+                this.setState({testFolderWindowWidth:newWidth});
+            }
+            const setHeight = (newHeight) =>{
+                this.setState({testFolderWindowHeight:newHeight});
+            }
+            return <Window name='testFolder' closeWindow={() => this.setState({testFolderWindowShown:false})} windowShown={this.state.testFolderWindowShown} guts={() => <TestPDF/>} zIndexes={this.state.zIndexes} updateZ={(indexDict) => setNewZIndex(indexDict)} width={this.state.testFolderWindowWidth} height={this.state.testFolderWindowHeight} updateWidth={setWidth} updateHeight={setHeight}/>
         }
 
         const WelcomeIcon = () =>{
             const openFunc = () =>{
-                this.setState({welcomePage:true});
+                this.setState({welcomePageShown:true});
                 updateZIndexes('welcomePage');
             }
             return <Html name='welcomePage' onDoubleClick={openFunc} id={"welcomeWindow"}/>
         }
         const WelcomeWindow = () =>{
-            const toggleFirst = () =>{
-                this.setState({firstWelcome:false});
-            }
             const closeFunc = () => {
-                this.setState({welcomePage:false});
-                toggleFirst();
+                this.setState({welcomePageShown:false});
             }
-            return <Window name='welcomePage' closeWindow={closeFunc} windowShown={this.state.welcomePage} guts={ () => <LandingWindow/>} zIndexes={this.state.zIndexes} updateZ={(indexDict) => setNewZIndex(indexDict)} firstRender={this.state.firstWelcome} toggleFirst={toggleFirst}/>
+            const setWidth = (newWidth) =>{
+                this.setState({welcomePageWidth:newWidth});
+            }
+            const setHeight = (newHeight) =>{
+                this.setState({welcomePageHeight:newHeight});
+            }
+            return <Window name='welcomePage' closeWindow={closeFunc} windowShown={this.state.welcomePageShown} guts={ () => <LandingWindow/>} zIndexes={this.state.zIndexes} updateZ={(indexDict) => setNewZIndex(indexDict)} width={this.state.welcomePageWidth} height={this.state.welcomePageHeight} updateWidth={setWidth} updateHeight={setHeight}/>
         }
 
         return (

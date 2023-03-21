@@ -1,6 +1,10 @@
 export function getNumFromPx(numPx){
-    const stripped = numPx.replace("px", '');
-    return parseInt(stripped, 10);
+    if(typeof numPx == "string"){
+      const stripped = numPx.replace("px", '');
+      return parseInt(stripped, 10);
+    }
+    console.log("input not a string for get num from px");
+    return numPx;
 }
 
 export function getOffset(el) {

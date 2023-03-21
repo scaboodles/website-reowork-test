@@ -73,12 +73,47 @@ img {
     background-color: transparent;
     border: none;
     left: 25px;
-    top: 7px
+    top: 7px;
 }
 .closeButton:hover{
     background-image: url('./resources/close-button-hover.png');
 }
 
+.maximizeButton{
+    position: inherit;
+    cursor: url('./resources/pointer-clickable.png'), auto;
+    background-image: url('./resources/maximize-button.png');
+    height: 16px;
+    width: 16px;
+    background-size: cover;
+    z-index: 3;
+    background-color: transparent;
+    border: none;
+    left: 25px;
+    top: 7px;
+    margin-left: 7px;
+}
+.maximizeButton:hover{
+    background-image: url('./resources/maximize-button-hover.png');
+}
+
+.minimizeButton{
+    position: inherit;
+    cursor: url('./resources/pointer-clickable.png'), auto;
+    background-image: url('./resources/maximize-button.png');
+    height: 16px;
+    width: 16px;
+    background-size: cover;
+    z-index: 3;
+    background-color: transparent;
+    border: none;
+    left: 25px;
+    top: 7px;
+    margin-left: 7px;
+}
+.minimizeButton:hover{
+    background-image: url('./resources/minimize-button-hover.png');
+}
 .icon {
     cursor: url('./resources/pointer-clickable.png'), auto;
     position: absolute;

@@ -153,15 +153,11 @@ function dragElement(elmnt, win){
             if(outOfBoundsY >= 0 && outOfBoundsY <= maxY && e.clientY < maxY - height + headerOffset){//not out of bounds on top
                 outOfBoundsY -= y1; //update outOfBounds tracker
                 elmnt.style.top = (elmnt.offsetTop - y1) + "px";//update pos
-            }else{
-                console.log("false");
             }
         }else if(dy>0){
             if(outOfBoundsY <= maxY - height && outOfBoundsY >= 0 && e.clientY - headerOffset > 0){
                 outOfBoundsY -= y1;
                 elmnt.style.top = (elmnt.offsetTop - y1) + "px";
-            }else{
-                console.log("false");
             }
         }
 
