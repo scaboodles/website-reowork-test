@@ -185,6 +185,7 @@ function Window(props){
                 document.removeEventListener("mousemove", onMouseMoveLeftResize);
                 resizeOutOfBoundsOffsetX = 0;
 
+                updatePositions();
                 updateWidth();
             }
 
@@ -219,7 +220,7 @@ function Window(props){
                 resizableEle.style.bottom = `${getNumFromPx(resizedStyle.bottom) + tempTop}px`
                 document.removeEventListener("mousemove", onMouseMoveTopResize);
                 resizeOutOfBoundsOffsetY = 0;
-
+                updatePositions();
                 updateHeight();
             }
 
@@ -307,6 +308,7 @@ function Window(props){
 
                 document.removeEventListener("mousemove", onMouseMoveTopLeftResize);
 
+                updatePositions();
                 updateHeight();
                 updateWidth();
             }
@@ -367,6 +369,8 @@ function Window(props){
 
                 document.removeEventListener("mousemove", onMouseMoveTopRightResize);
 
+
+                updatePositions();
                 updateHeight();
                 updateWidth();
             }
@@ -479,6 +483,7 @@ function Window(props){
 
                 document.removeEventListener("mousemove", onMouseMoveBottomLeftResize);
 
+                updatePositions();
                 updateHeight();
                 updateWidth();
             }
