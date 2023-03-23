@@ -1,6 +1,10 @@
+/* no longer used, moved to index.js inline
+
+its gross put it works so...
+*/
 import { getOffset } from "./helpers";
-export function clickAndDrag(element, win){
-    dragElement(element, win);
+export function clickAndDrag(element, win, updatePositions){
+    dragElement(element, win, updatePositions);
 }
 
 export function suspendDrag(elmnt){
@@ -13,7 +17,7 @@ export function suspendDrag(elmnt){
     }
 }
 
-function dragElement(elmnt, win){
+function dragElement(elmnt, win, updatePositions){
     var x1 = 0, x2 = 0, y1 = 0, y2 = 0;
 
     //hella globals bc i am bad at programming
@@ -73,7 +77,7 @@ function dragElement(elmnt, win){
             rightGrace = width - pointOnWin;
         }
 
-        document.onmouseup = closeDragElement; //stop dragging on mouse up
+        document.onmouseup = (updatePositions) => closeDragElement(updatePositions); //stop dragging on mouse up
         document.onmousemove = elementDrag; // call a function whenever the cursor moves:
 
     }
@@ -169,7 +173,7 @@ function dragElement(elmnt, win){
         }
     }
 
-    function closeDragElement(e) {
+    function closeDragElement(e, updatePositions) {
         // stop moving when mouse button is released by removing document mouse events
         document.onmouseup = null;
         document.onmousemove = null;
@@ -182,5 +186,7 @@ function dragElement(elmnt, win){
 
         outOfBoundsX = 0;
         outOfBoundsY = 0;
+
+        updatePositions();
     }
 }
