@@ -45,3 +45,6 @@
     margin-top: 10%;
     margin-left: 10%;
 }
+.clickable{
+    cursor: url('./resources/pointer-clickable.png'), auto;
+}

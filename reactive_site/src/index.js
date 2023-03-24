@@ -4,6 +4,7 @@ import ReactDOM from 'react-dom';
 import './style.css';
 import { getNumFromPx, sortedKeysByVal, findKeyOfmax} from './helpers';
 import { LandingWindow } from './landingPage';
+import { PigeonMingleLauncher } from './pigeonMingleLauncher';
 
 const maxDimensionsOffset = {width:10,height:10};
 const defaultDimensions = {
@@ -44,9 +45,7 @@ function Window(props){
     }
     const updatePositions = () =>{
         const moverMounted = moverRef.current;
-        console.log("tryna update");
         if(moverMounted){
-            console.log("updated");
             const styles = window.getComputedStyle(moverMounted);
             let newPos = {x:getNumFromPx(styles.left), y:getNumFromPx(styles.top)};
             props.setPos(newPos);
@@ -767,7 +766,7 @@ function Window(props){
 
 export const Folder = (props) => {
     return ( 
-        <div className="icon" onDoubleClick={props.onDoubleClick}>
+        <div className="icon" id={props.id} onDoubleClick={props.onDoubleClick}>
             <img src={require('./resources/folder.png')} />
             <h1>{props.name}</h1>
         </div>
@@ -792,6 +791,15 @@ const Html = (props) => {
     );
 };
 
+const MingleLauncher = (props) => {
+    return(
+        <div className="icon" id={props.id} onDoubleClick={props.onDoubleClick}>
+            <img src={require('./resources/pigeonIcon.png')} />
+            <h1>{"Pigeon Mingle"}</h1>
+        </div>
+    );
+};
+
 class Desktop extends React.Component {
     constructor(props) {
         super(props)
@@ -812,7 +820,11 @@ class Desktop extends React.Component {
             welcomePageWidth:maxDimensions.width,
             welcomePageHeight:maxDimensions.height,
             welcomePagePosition:maximizedPosition,
-            zIndexes:{testFolder:1, testPDF:2, welcomePage:3}
+            mingleLauncherShown:false,
+            mingleLauncherWidth:maxDimensions.width,
+            mingleLauncherHeight:maxDimensions.height,
+            mingleLauncherPosition:maximizedPosition,
+            zIndexes:{welcomePage:1, testPDF:2, testFolder:3, mingleLauncher: 4}
         };
     }
     render() {
@@ -850,6 +862,7 @@ class Desktop extends React.Component {
             }
             return <Pdf name='testPDF' onDoubleClick={openFunc}/>
         }
+
         const TestPDFWindow = () =>{
             const setWidth = (newWidth) =>{
                 this.setState({testPDFWindowWidth:newWidth});
@@ -869,7 +882,7 @@ class Desktop extends React.Component {
                 this.setState({testFolderWindowShown:true});
                 updateZIndexes('testFolder');
             }
-            return <Folder name='testFolder' onDoubleClick={openFunc} />
+            return <Folder name='testFolder' id={"testFolder"} onDoubleClick={openFunc} />
         }
         const TestFolderWindow = () => {
             const setWidth = (newWidth) =>{
@@ -884,6 +897,30 @@ class Desktop extends React.Component {
             return <Window name='testFolder' closeWindow={() => this.setState({testFolderWindowShown:false})} windowShown={this.state.testFolderWindowShown} guts={() => <TestPDF/>} zIndexes={this.state.zIndexes} updateZ={(indexDict) => setNewZIndex(indexDict)} width={this.state.testFolderWindowWidth} height={this.state.testFolderWindowHeight} updateWidth={setWidth} updateHeight={setHeight} position={this.state.testFolderWindowPosition} setPos={setPos}/>
         }
 
+        const MingleLauncherIcon = () =>{
+            const openFunc = () =>{
+                this.setState({mingleLauncherShown:true});
+                updateZIndexes('mingleLauncher');
+            }
+            return <MingleLauncher name='mingleLauncher' onDoubleClick={openFunc} id={"mingleLauncher"}/>
+        }
+
+        const MingleLauncherWindow = () =>{
+            const closeFunc = () => {
+                this.setState({mingleLauncherShown:false});
+            }
+            const setWidth = (newWidth) =>{
+                this.setState({mingleLauncherWidth:newWidth});
+            }
+            const setHeight = (newHeight) =>{
+                this.setState({mingleLauncherHeight:newHeight});
+            }
+            const setPos = (newPos) =>{
+                this.setState({mingleLauncherPosition:newPos});
+            }
+        return <Window name='mingleLauncher' closeWindow={closeFunc} windowShown={this.state.mingleLauncherShown} guts={()=><PigeonMingleLauncher/>} zIndexes={this.state.zIndexes} updateZ={(indexDict) => setNewZIndex(indexDict)} width={this.state.mingleLauncherWidth} height={this.state.mingleLauncherHeight} updateWidth={setWidth} updateHeight={setHeight} position={this.state.mingleLauncherPosition} setPos={setPos}/>
+        }
+
         const WelcomeIcon = () =>{
             const openFunc = () =>{
                 this.setState({welcomePageShown:true});
@@ -891,6 +928,7 @@ class Desktop extends React.Component {
             }
             return <Html name='welcomePage' onDoubleClick={openFunc} id={"welcomeWindow"}/>
         }
+
         const WelcomeWindow = () =>{
             const closeFunc = () => {
                 this.setState({welcomePageShown:false});
@@ -915,6 +953,8 @@ class Desktop extends React.Component {
                 <TestPDFWindow/>
                 <WelcomeIcon/>
                 <WelcomeWindow/>
+                <MingleLauncherIcon/>
+                <MingleLauncherWindow/>
             </div>
         )
     };

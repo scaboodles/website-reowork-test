@@ -130,8 +130,18 @@ img {
 }
 
 #welcomeWindow{
-    left: 1%;
-    top: 75px;
+    left: 5px;
+    top: 90px;
+}
+
+#mingleLauncher{
+    left: 85px;
+    top: 5px;
+}
+
+#testFolder{
+    left: 6px;
+    top: 10px;
 }
 
 .moving {

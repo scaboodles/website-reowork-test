@@ -22,17 +22,32 @@ export function LandingWindow(){
             <div id='what' className='dialog'>
                 <p>
                     This website is my digital portfolio! Well, it is for now at least. You may have noticed the strange domain
-                    name. PigeonMingle.com is something I started building with my dad a while ago.
+                    name. PigeonMingle.com is something I started building with my dad a while ago, and it will eventually replace this site.
                 </p>
             </div>
             <div className='dashes'>----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------</div>
             <h3 className='question'>
-                Ok, but what is it right now?
+                PigeonMingle.com? What's that?
+            </h3>
+            <div className='dashes'>----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------</div>
+            <div id='pigeons' className='dialog'>
+                <p>
+                    The thesis for PigeonMingle.com was an anti-social social lobby. A multiplayer game with no usernames, no chat, 
+                    no substantial communication of any kind, and at the moment no real objective. Just flapping around with your fellow pigeons.
+                    <br/><br/>
+                    It's kinda dumb, but I hope it's the good kind of dumb. I imagine it serving the same role as cookie clicker, where you have it
+                    running in the background and check back in every so often to see what's up. Click the icon to the left to see what I have so far!
+                </p> 
+                <img className='pixelMoji topMargin clickable' src={require('./resources/animatedPigeonIcon.gif')}/>
+            </div>
+            <div className='dashes'>----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------</div>
+            <h3 className='question'>
+                Ok, but what is this website right now?
             </h3>
             <div className='dashes'>----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------</div>
             <div id='butFrWhat' className='dialog'>
                <p>
-                    Good question, me! Like I said before, this is my digital portfolio. It is a way to show off what I have done and what I am
+                    Like I said before, this is my digital portfolio. It is a way to show off what I have done and what I am
                     working on to people who might want to exchange free labor for a refrence on my resume. The website itself is built in react and is
                     supposed to emulate a computer desktop. 
                     <br/><br/>
