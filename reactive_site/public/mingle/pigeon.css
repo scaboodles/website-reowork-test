@@ -1,0 +1,15 @@
+* {
+    display: block;
+    margin:auto;
+    padding:0;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: -webkit-crisp-edges;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+}
+
+.debug {
+    background-color: teal;
+}
+.debug button{
+}

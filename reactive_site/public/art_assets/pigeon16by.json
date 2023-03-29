@@ -1,0 +1,97 @@
+{ "frames": {
+   "0": {
+    "frame": { "x": 31, "y": 14, "w": 12, "h": 10 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 1, "y": 3, "w": 10, "h": 8 },
+    "sourceSize": { "w": 13, "h": 11 },
+    "duration": 100
+   },
+   "1": {
+    "frame": { "x": 1, "y": 24, "w": 14, "h": 9 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 0, "y": 4, "w": 12, "h": 7 },
+    "sourceSize": { "w": 13, "h": 11 },
+    "duration": 100
+   },
+   "2": {
+    "frame": { "x": 16, "y": 25, "w": 12, "h": 10 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 1, "y": 3, "w": 10, "h": 8 },
+    "sourceSize": { "w": 13, "h": 11 },
+    "duration": 100
+   },
+   "3": {
+    "frame": { "x": 29, "y": 25, "w": 12, "h": 9 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 1, "y": 4, "w": 10, "h": 7 },
+    "sourceSize": { "w": 13, "h": 11 },
+    "duration": 100
+   },
+   "4": {
+    "frame": { "x": 17, "y": 1, "w": 14, "h": 12 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 1, "y": 0, "w": 12, "h": 10 },
+    "sourceSize": { "w": 13, "h": 11 },
+    "duration": 100
+   },
+   "5": {
+    "frame": { "x": 17, "y": 14, "w": 13, "h": 10 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 1, "y": 2, "w": 11, "h": 8 },
+    "sourceSize": { "w": 13, "h": 11 },
+    "duration": 100
+   },
+   "6": {
+    "frame": { "x": 1, "y": 14, "w": 15, "h": 9 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 0, "y": 4, "w": 13, "h": 7 },
+    "sourceSize": { "w": 13, "h": 11 },
+    "duration": 100
+   },
+   "7": {
+    "frame": { "x": 1, "y": 1, "w": 15, "h": 12 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 13, "h": 10 },
+    "sourceSize": { "w": 13, "h": 11 },
+    "duration": 100
+   },
+   "8": {
+    "frame": { "x": 32, "y": 1, "w": 12, "h": 12 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 1, "y": 1, "w": 10, "h": 10 },
+    "sourceSize": { "w": 13, "h": 11 },
+    "duration": 100
+   }
+ },
+ "meta": {
+  "app": "http://www.aseprite.org/",
+  "version": "1.2.28",
+  "image": "pigeon16by.png",
+  "format": "RGBA8888",
+  "size": { "w": 44, "h": 35 },
+  "scale": "1",
+  "frameTags": [
+   { "name": "walk", "from": 0, "to": 1, "direction": "forward" },
+   { "name": "idle", "from": 2, "to": 3, "direction": "forward" },
+   { "name": "noflap_nomove", "from": 4, "to": 4, "direction": "forward" },
+   { "name": "flap_nomove", "from": 5, "to": 5, "direction": "forward" },
+   { "name": "flap_move", "from": 6, "to": 6, "direction": "forward" },
+   { "name": "noflap_move", "from": 7, "to": 7, "direction": "forward" },
+   { "name": "dive", "from": 8, "to": 8, "direction": "forward" }
+  ],
+  "layers": [
+   { "name": "Layer 1", "opacity": 255, "blendMode": "normal" }
+  ],
+  "slices": [
+  ]
+ }
+}

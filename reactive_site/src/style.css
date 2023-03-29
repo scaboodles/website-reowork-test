@@ -56,9 +56,16 @@ img {
 
 #githubIcon{
     position: absolute;
-    background-image: url('./resources/gh-icon.png');
     top: 5%;
-    right: 5%;
+    right: 64px;
+    z-index: 0;
+    cursor: url('./resources/pointer-clickable.png'), auto;
+}
+
+#linkedInIcon{
+    position: absolute;
+    top: 5%;
+    right: 128px;
     z-index: 0;
     cursor: url('./resources/pointer-clickable.png'), auto;
 }
@@ -141,7 +148,7 @@ img {
 
 #testFolder{
     left: 6px;
-    top: 10px;
+    top: 5px;
 }
 
 .moving {
@@ -321,6 +328,20 @@ img {
 }
 .decor{
     pointer-events: none;
+}
+
+.windowVid{
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    height: 100%;
+}
+
+.windowVidBackground{
+    height: 100%;
+    width: 100%;
+
+    background-color: black;
 }
 
 /* width */

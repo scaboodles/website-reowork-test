@@ -1,11 +1,25 @@
 #bigOl{
+    display: block;
     height: 100%;
     width: 100%;
     background-color: white;
+    margin: 0;
+    border: none;
 }
 #titleImage{
-    width: 60%;
-    position:absolute;
-    left: 20%;
-    top: 5%;
+    height: 40%;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+#instructions{
+    height: 50%;
+    display: block;
+}
+#startButton{
+    display: block;
+    cursor: url('./resources/pointer-clickable.png'), auto;
+    margin-left: auto;
+    margin-right: auto;
+    height: 10%;
 }

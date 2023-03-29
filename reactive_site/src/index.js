@@ -1,10 +1,13 @@
-import React, { useState, useEffect, useRef, forwardRef, createRef } from 'react';
+import React, { useState, useEffect, useRef, forwardRef, createRef, StrictMode } from 'react';
 import ReactCliDOM from 'react-dom/client';
 import ReactDOM from 'react-dom';
 import './style.css';
 import { getNumFromPx, sortedKeysByVal, findKeyOfmax} from './helpers';
 import { LandingWindow } from './landingPage';
 import { PigeonMingleLauncher } from './pigeonMingleLauncher';
+import { BrowserRouter, Route,Routes } from 'react-router-dom';
+
+import djHotkeyDemo from "./resources/movies/dj-hotkey-demo.mov"
 
 const maxDimensionsOffset = {width:10,height:10};
 const defaultDimensions = {
@@ -241,6 +244,7 @@ function Window(props){
 
     const closeFunc = (() => {
         props.closeWindow();
+        SendZIndexToBack();
     });
 
     const maximizeWindow = (() => {
@@ -260,7 +264,7 @@ function Window(props){
         MaximizeButton = () => <button className='maximizeButton' type='button' onClick={maximizeWindow}></button>;
     }
 
-    const updateZIndexes = () =>{
+    const BringZIndexToFront = () =>{
         const highestZ=findKeyOfmax(zIndexes);
         if(highestZ == pairName){
             return;
@@ -268,6 +272,22 @@ function Window(props){
             let sortedKeys = sortedKeysByVal(zIndexes);
             let currIndex = sortedKeys.indexOf(pairName);
             sortedKeys.unshift(sortedKeys.splice(currIndex, 1)[0]);
+            let updatedZs = {};
+            for(let i=0; i<sortedKeys.length; i++){
+                updatedZs[sortedKeys[i]] = sortedKeys.length - i + 1;
+            }
+            props.updateZ(updatedZs);
+        }
+    }
+
+    const SendZIndexToBack = () =>{
+        const highestZ=findKeyOfmax(zIndexes);
+        if(highestZ != pairName){
+            return;
+        }else{
+            let sortedKeys = sortedKeysByVal(zIndexes);
+            let currIndex = sortedKeys.indexOf(pairName);
+            sortedKeys.push(sortedKeys.splice(currIndex, 1)[0]);
             let updatedZs = {};
             for(let i=0; i<sortedKeys.length; i++){
                 updatedZs[sortedKeys[i]] = sortedKeys.length - i + 1;
@@ -707,7 +727,7 @@ function Window(props){
             const resizerBottomLeft = resizeRefBL.current;
             resizerBottomLeft.addEventListener("mousedown", onMouseDownBottomLeftResize);
 
-            moveableContainer.addEventListener("mousedown", updateZIndexes);
+            moveableContainer.addEventListener("mousedown", BringZIndexToFront);
 
             //cleanup event listeners
             return () => {
@@ -719,7 +739,7 @@ function Window(props){
                 resizerTopRight.removeEventListener("mousedown", onMouseDownTopRightResize);
                 resizerBottomLeft.removeEventListener("mousedown", onMouseDownBottomLeftResize);
                 resizerBottomRight.removeEventListener("mousedown", onMouseDownBottomRightResize);
-                moveableContainer.addEventListener("mousedown", updateZIndexes);
+                moveableContainer.addEventListener("mousedown", BringZIndexToFront);
             }
         };
     });
@@ -773,9 +793,18 @@ export const Folder = (props) => {
     );
 };
 
+export const Mov = (props) => {
+    return ( 
+        <div className="icon" id={props.id} onDoubleClick={props.onDoubleClick}>
+            <img src={require('./resources/mov-icon.png')} />
+            <h1>{props.name}</h1>
+        </div>
+    );
+};
+
 const Pdf  = (props) => {
     return(
-        <div className="icon" onDoubleClick={props.onDoubleClick}>
+        <div className="icon" id={props.id} onDoubleClick={props.onDoubleClick}>
             <img src={require('./resources/txt-icon.png')} />
             <h1>{props.name}</h1>
         </div>
@@ -812,19 +841,28 @@ class Desktop extends React.Component {
             testFolderWindowWidth:defaultDimensions.width,
             testFolderWindowHeight:defaultDimensions.height,
             testFolderWindowPosition:defaultPosition,
+
             testPDFWindowShown:false,
             testPDFWindowWidth:defaultDimensions.width,
             testPDFWindowHeight:defaultDimensions.height,
             testPDFWindowPosition: defaultPosition,
+
             welcomePageShown:true,
             welcomePageWidth:maxDimensions.width,
             welcomePageHeight:maxDimensions.height,
             welcomePagePosition:maximizedPosition,
+
             mingleLauncherShown:false,
             mingleLauncherWidth:maxDimensions.width,
             mingleLauncherHeight:maxDimensions.height,
             mingleLauncherPosition:maximizedPosition,
-            zIndexes:{welcomePage:1, testPDF:2, testFolder:3, mingleLauncher: 4}
+
+            testVideoShown:false,
+            testVideoWidth:defaultDimensions.width,
+            testVideoHeight:defaultDimensions.height,
+            testVideoPosition:defaultPosition,
+
+            zIndexes:{welcomePage:6, testVideo:5, testPDF:4, testFolder:3, mingleLauncher: 2}
         };
     }
     render() {
@@ -855,6 +893,12 @@ class Desktop extends React.Component {
             return <a href='https://github.com/scaboodles' target="_blank"><img id='githubIcon' src={img1} onMouseOver={e => (e.currentTarget.src = img2)} onMouseOut={e => (e.currentTarget.src = img1)} alt="github link"></img></a>;
         }
 
+        const LinkedInLink = () => {
+            const img1 = require('./resources/linkedInIcon.png');
+            const img2 = require('./resources/linkedInIcon-hover.png');
+            return <a href='https://www.linkedin.com/in/owen-wolff-061a85229/' target="_blank"><img id='linkedInIcon' src={img1} onMouseOver={e => (e.currentTarget.src = img2)} onMouseOut={e => (e.currentTarget.src = img1)} alt="linked in link"></img></a>;
+        }
+
         const TestPDF = () => {
             const openFunc = () =>{
                 this.setState({testPDFWindowShown:true})
@@ -862,7 +906,6 @@ class Desktop extends React.Component {
             }
             return <Pdf name='testPDF' onDoubleClick={openFunc}/>
         }
-
         const TestPDFWindow = () =>{
             const setWidth = (newWidth) =>{
                 this.setState({testPDFWindowWidth:newWidth});
@@ -897,12 +940,12 @@ class Desktop extends React.Component {
             return <Window name='testFolder' closeWindow={() => this.setState({testFolderWindowShown:false})} windowShown={this.state.testFolderWindowShown} guts={() => <TestPDF/>} zIndexes={this.state.zIndexes} updateZ={(indexDict) => setNewZIndex(indexDict)} width={this.state.testFolderWindowWidth} height={this.state.testFolderWindowHeight} updateWidth={setWidth} updateHeight={setHeight} position={this.state.testFolderWindowPosition} setPos={setPos}/>
         }
 
+        const mingleLauncherOpenFunc = () =>{
+            this.setState({mingleLauncherShown:true});
+            updateZIndexes('mingleLauncher');
+        }
         const MingleLauncherIcon = () =>{
-            const openFunc = () =>{
-                this.setState({mingleLauncherShown:true});
-                updateZIndexes('mingleLauncher');
-            }
-            return <MingleLauncher name='mingleLauncher' onDoubleClick={openFunc} id={"mingleLauncher"}/>
+            return <MingleLauncher name='mingleLauncher' onDoubleClick={mingleLauncherOpenFunc} id={"mingleLauncher"}/>
         }
 
         const MingleLauncherWindow = () =>{
@@ -918,7 +961,7 @@ class Desktop extends React.Component {
             const setPos = (newPos) =>{
                 this.setState({mingleLauncherPosition:newPos});
             }
-        return <Window name='mingleLauncher' closeWindow={closeFunc} windowShown={this.state.mingleLauncherShown} guts={()=><PigeonMingleLauncher/>} zIndexes={this.state.zIndexes} updateZ={(indexDict) => setNewZIndex(indexDict)} width={this.state.mingleLauncherWidth} height={this.state.mingleLauncherHeight} updateWidth={setWidth} updateHeight={setHeight} position={this.state.mingleLauncherPosition} setPos={setPos}/>
+            return <Window name='mingleLauncher' closeWindow={closeFunc} windowShown={this.state.mingleLauncherShown} guts={()=><PigeonMingleLauncher/>} zIndexes={this.state.zIndexes} updateZ={(indexDict) => setNewZIndex(indexDict)} width={this.state.mingleLauncherWidth} height={this.state.mingleLauncherHeight} updateWidth={setWidth} updateHeight={setHeight} position={this.state.mingleLauncherPosition} setPos={setPos}/>
         }
 
         const WelcomeIcon = () =>{
@@ -942,23 +985,79 @@ class Desktop extends React.Component {
             const setPos = (newPos) =>{
                 this.setState({welcomePagePosition:newPos});
             }
-            return <Window name='welcomePage' closeWindow={closeFunc} windowShown={this.state.welcomePageShown} guts={ () => <LandingWindow/>} zIndexes={this.state.zIndexes} updateZ={(indexDict) => setNewZIndex(indexDict)} width={this.state.welcomePageWidth} height={this.state.welcomePageHeight} updateWidth={setWidth} updateHeight={setHeight} position={this.state.welcomePagePosition} setPos={setPos}/>
+            return <Window name='welcomePage' closeWindow={closeFunc} windowShown={this.state.welcomePageShown} guts={ () => <LandingWindow openMingleLancher={mingleLauncherOpenFunc}/>} zIndexes={this.state.zIndexes} updateZ={(indexDict) => setNewZIndex(indexDict)} width={this.state.welcomePageWidth} height={this.state.welcomePageHeight} updateWidth={setWidth} updateHeight={setHeight} position={this.state.welcomePagePosition} setPos={setPos}/>
+        }
+
+        const TestVideoIcon = () =>{
+            const openFunc = () =>{
+                this.setState({testVideoShown:true});
+                updateZIndexes('testVideo');
+            }
+            return <Mov name='testVideo' onDoubleClick={openFunc} id={"testVideo"}/>
+        }
+        const TestVideoGuts = () =>{
+            return(
+                <div className='windowVidBackground'>
+                    <video className='windowVid' controls autoPlay loop muted>
+                        <source src={djHotkeyDemo} type="video/mp4"></source>
+                    </video>
+                </div>
+            )
+        }
+        const TestVideoWindow = () =>{
+            const closeFunc = () => {
+                this.setState({testVideoShown:false});
+            }
+            const setWidth = (newWidth) =>{
+                this.setState({testVideoWidth:newWidth});
+            }
+            const setHeight = (newHeight) =>{
+                this.setState({testVideoHeight:newHeight});
+            }
+            const setPos = (newPos) =>{
+                this.setState({testVideoPosition:newPos});
+            }
+            return <Window name='testVideo' closeWindow={closeFunc} windowShown={this.state.testVideoShown} guts={ () => <TestVideoGuts/>} zIndexes={this.state.zIndexes} updateZ={(indexDict) => setNewZIndex(indexDict)} width={this.state.testVideoWidth} height={this.state.testVideoHeight} updateWidth={setWidth} updateHeight={setHeight} position={this.state.testVideoPosition} setPos={setPos}/>
         }
 
         return (
             <div id='Desktop'>
                 <GithubLink/>
+                <LinkedInLink/>
+
                 <TestFolder/>
                 <TestFolderWindow/>
                 <TestPDFWindow/>
+
                 <WelcomeIcon/>
                 <WelcomeWindow/>
+
                 <MingleLauncherIcon/>
                 <MingleLauncherWindow/>
+
+                <TestVideoIcon/>
+                <TestVideoWindow/>
             </div>
         )
     };
 }
 
+function Wrapper(){
+    const reload = () => window.location.reload();
+    return(
+        <div>
+            <Routes>
+                <Route path='/' element={<Desktop/>}/>
+            </Routes>
+        </div>
+    )
+}
+
 const root = ReactCliDOM.createRoot(document.getElementById("root"));
-root.render(<Desktop />);
+root.render(
+    <StrictMode>
+        <BrowserRouter>
+            <Wrapper />
+        </BrowserRouter>
+    </StrictMode>
+);

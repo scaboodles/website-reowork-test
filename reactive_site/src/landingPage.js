@@ -1,6 +1,10 @@
 import './landingWindowStyle.css';
 
-export function LandingWindow(){
+export function LandingWindow(props){
+    const openLauncher= () =>{
+        console.log("open");
+        props.openMingleLancher();
+    }
     return(
         <div id='overrideGuts'>
             <div id='header'>
@@ -38,7 +42,7 @@ export function LandingWindow(){
                     It's kinda dumb, but I hope it's the good kind of dumb. I imagine it serving the same role as cookie clicker, where you have it
                     running in the background and check back in every so often to see what's up. Click the icon to the left to see what I have so far!
                 </p> 
-                <img className='pixelMoji topMargin clickable' src={require('./resources/animatedPigeonIcon.gif')}/>
+                <img className='pixelMoji topMargin clickable' src={require('./resources/animatedPigeonIcon.gif')} onMouseDown={openLauncher}/>
             </div>
             <div className='dashes'>----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------</div>
             <h3 className='question'>
