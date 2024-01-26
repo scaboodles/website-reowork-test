@@ -1,11 +1,18 @@
 @font-face {
-    font-family: 'DotGothic16';
-    src: url('./resources/DotGothic16-Regular.woff2') format('woff2'),
-        url('./resources/DotGothic16-Regular.woff') format('woff');
+    font-family: 'Ubuntu';
+    src: url('../public/fonts/Ubuntu-Regular.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
     font-display: swap;
 }
+@font-face {
+    font-family: 'UbuntuItalic';
+    src: url('../public/fonts/Ubuntu-Italic.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
 html, body, #root, .App {
     height: 100%;
     margin: 0;
@@ -22,6 +29,10 @@ html, body, #root, .App {
     height: 100%;
     overflow: hidden;
 }
+*{
+    font-family: Ubuntu;
+}
+/*
 p{
     font-family: 'DotGothic16';
     font-weight: normal;
@@ -42,6 +53,7 @@ h1{
     font-weight: normal;
     font-style: normal;
 }
+*/
 img {
     image-rendering: pixelated;
     image-rendering: -moz-crisp-edges;
@@ -61,6 +73,9 @@ img {
     z-index: 0;
     cursor: url('./resources/pointer-clickable.png'), auto;
 }
+.clickable{
+    cursor: url('./resources/pointer-clickable.png'), auto;
+}
 
 #linkedInIcon{
     position: absolute;
@@ -69,6 +84,11 @@ img {
     z-index: 0;
     cursor: url('./resources/pointer-clickable.png'), auto;
 }
+
+#bounceGateIcon{
+    position: relative;
+}
+
 .closeButton{
     position: absolute;
     cursor: url('./resources/pointer-clickable.png'), auto;
@@ -122,8 +142,14 @@ img {
 .icon {
     cursor: url('./resources/pointer-clickable.png'), auto;
     position: absolute;
-    padding: 0%;
+    padding: 7px;
 }
+.iconContainer .icon{
+    cursor: url('./resources/pointer-clickable.png'), auto;
+    position: relative;
+    width: 64px;
+}
+
 .icon img{
     pointer-events: none;
 }
@@ -136,6 +162,12 @@ img {
     margin-top: -5px;    /* CORRECTION FOR LINE-HEIGHT */
 }
 
+.iconContainer{
+    display: flex;
+    flex-wrap: wrap;
+    flex-flow: row wrap;
+}
+
 #welcomeWindow{
     left: 5px;
     top: 90px;
@@ -146,9 +178,14 @@ img {
     top: 5px;
 }
 
-#testFolder{
+#projects{
     left: 6px;
     top: 5px;
+}
+
+#ComputerVision{
+    left:6px;
+    top:186px;
 }
 
 .moving {
@@ -314,6 +351,7 @@ img {
 }
 .windowContents{
     position: absolute;
+    display: inline;
     height: calc(100% - 45.5px);
     width: calc(100% - 25px);
     left: 12.5px;

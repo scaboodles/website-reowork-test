@@ -13,7 +13,8 @@ export function LandingWindow(props){
             <div id='bio' className='dialog'>
                 <p>
                     My name is Owen Wolff. I am a rising Junior in the engineering program at George Washington University. I'm looking for an
-                    an unpaid intership for the summer of 2023 building software. I am proficient in python, java, and javascript. 
+                    an intership for the summer of 2024 building software or doing web development. I am proficient in python, java, javascript, 
+                    C, C++, and more. 
                     I'm a quick learner, and I make decent coffee.
                 </p>
                 <img className='pixelMoji' src={require('./resources/sipping.gif')}/>
@@ -25,42 +26,36 @@ export function LandingWindow(props){
             <div className='dashes'>----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------</div>
             <div id='what' className='dialog'>
                 <p>
-                    This website is my digital portfolio! Well, it is for now at least. You may have noticed the strange domain
-                    name. PigeonMingle.com is something I started building with my dad a while ago, and it will eventually replace this site.
+                    This website is my digital portfolio, but more importantly it was an excuse to build something unintuitive in React and
+                    flex my pixel art skillz.
                 </p>
             </div>
             <div className='dashes'>----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------</div>
             <h3 className='question'>
-                PigeonMingle.com? What's that?
+                PigeonMingle.com? That's a weird name.
             </h3>
             <div className='dashes'>----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------</div>
             <div id='pigeons' className='dialog'>
                 <p>
-                    The thesis for PigeonMingle.com was an anti-social social lobby. A multiplayer game with no usernames, no chat, 
-                    no substantial communication of any kind, and at the moment no real objective. Just flapping around with your fellow pigeons.
+                    Yeah, it kinda is.
                     <br/><br/>
-                    It's kinda dumb, but I hope it's the good kind of dumb. I imagine it serving the same role as cookie clicker, where you have it
-                    running in the background and check back in every so often to see what's up. Click the icon to the left to see what I have so far!
+                    Originally, this website was gonna be something else. I pivoted when I realized it could be cool to have a digital portfolio
+                    for applying to internships.
+                    <br/><br/>
+                    You can see the scrapped project by clicking the icon to the left. I plan to revisit it at some point, but for now I'm focusing
+                    on school and getting a job.
                 </p> 
                 <img className='pixelMoji topMargin clickable' src={require('./resources/animatedPigeonIcon.gif')} onMouseDown={openLauncher}/>
             </div>
             <div className='dashes'>----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------</div>
             <h3 className='question'>
-                Ok, but what is this website right now?
+                So what's on here?
             </h3>
             <div className='dashes'>----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------</div>
             <div id='butFrWhat' className='dialog'>
                <p>
-                    Like I said before, this is my digital portfolio. It is a way to show off what I have done and what I am
-                    working on to people who might want to exchange free labor for a refrence on my resume. The website itself is built in react and is
-                    supposed to emulate a computer desktop. 
-                    <br/><br/>
-                    It this an intuitive layout for a website? No! Was it worth all the effort? Debatable! Is it kinda
-                    weird? Now you're getting it!
-                    <br/><br/>
-                    At the end of the day, this was an excuse to learn React, and what better way to learn React than with a project that over-uses refs.
-                    <br/><br/>
-                    Please, close this window and poke around a little bit! (Just dont open the dev console)
+                    Not much at the moment. A lot of my projects are difficult to show off interactively and this website is still
+                    a work in progress. Please, close this window and poke around a little bit!
                 </p> 
                 <img className='pixelMoji topMargin' src={require('./resources/typin.gif')}/>
             </div>

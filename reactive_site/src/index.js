@@ -4,8 +4,9 @@ import ReactDOM from 'react-dom';
 import './style.css';
 import { getNumFromPx, sortedKeysByVal, findKeyOfmax} from './helpers';
 import { LandingWindow } from './landingPage';
-import { PigeonMingleLauncher } from './pigeonMingleLauncher';
 import { BrowserRouter, Route,Routes } from 'react-router-dom';
+import { PigeonMingleLauncher } from './pigeonMingleLauncher';
+import { Entry1 } from './computerVisionBlog/entry1';
 
 import djHotkeyDemo from "./resources/movies/dj-hotkey-demo.mov"
 
@@ -28,6 +29,9 @@ function Window(props){
     const resizeRefTR = React.createRef(null);
     const resizeRefBL = React.createRef(null);
     const resizeRefBR = React.createRef(null);
+
+
+    const forceFullScreen = props.forceFullScreen ? props.forceFullScreen : false; 
 
     const pairName = props.name;
     const Guts=props.guts;
@@ -258,10 +262,14 @@ function Window(props){
         props.updateWidth(defaultDimensions.width);
     })
 
-    if(props.width >= window.innerWidth - 50 && props.height >= window.innerHeight - 50){
-        MaximizeButton = () => <button className='minimizeButton' type='button' onClick={minimizeWindow}></button>;
+    if(!forceFullScreen){
+        if(props.width >= window.innerWidth - 50 && props.height >= window.innerHeight - 50){
+            MaximizeButton = () => <button className='minimizeButton' type='button' onClick={minimizeWindow}></button>;
+        }else{
+            MaximizeButton = () => <button className='maximizeButton' type='button' onClick={maximizeWindow}></button>;
+        }
     }else{
-        MaximizeButton = () => <button className='maximizeButton' type='button' onClick={maximizeWindow}></button>;
+        MaximizeButton = () => <></>
     }
 
     const BringZIndexToFront = () =>{
@@ -745,8 +753,8 @@ function Window(props){
     });
     if (windowShown) {
         return (
-            <div ref={moverRef} className="mover" id={pairName}>
-                <div className="window" ref={windowRef} >
+            <div ref={moverRef} className="mover" id={pairName} >
+                <div className="window" ref={windowRef}>
                     <div ref={resizeRefT} className="resizer resizer-t"></div>
                     <div ref={resizeRefL} className="resizer resizer-l"></div>
                     <div ref={resizeRefR} className="resizer resizer-r"></div>
@@ -811,6 +819,15 @@ const Pdf  = (props) => {
     );
 };
 
+const CustomIcon = (props) => {
+    return(
+        <div className="icon" id={props.id} onDoubleClick={props.onDoubleClick}>
+            <props.icon/>
+            <h1>{props.name}</h1>
+        </div>
+    );
+}
+
 const Html = (props) => {
     return(
         <div className="icon" id={props.id} onDoubleClick={props.onDoubleClick}>
@@ -837,17 +854,22 @@ class Desktop extends React.Component {
             height:window.innerHeight-maxDimensionsOffset.height
         };
         this.state = {
-            testFolderWindowShown:false,
-            testFolderWindowWidth:defaultDimensions.width,
-            testFolderWindowHeight:defaultDimensions.height,
-            testFolderWindowPosition:defaultPosition,
+            projectFolderWindowShown:false,
+            projectFolderWindowWidth:defaultDimensions.width,
+            projectFolderWindowHeight:defaultDimensions.height,
+            projectFolderWindowPosition:defaultPosition,
 
             testPDFWindowShown:false,
             testPDFWindowWidth:defaultDimensions.width,
             testPDFWindowHeight:defaultDimensions.height,
             testPDFWindowPosition: defaultPosition,
 
-            welcomePageShown:true,
+            bounceGatePlayerShown:false,
+            bounceGatePlayerWidth:maxDimensions.width,
+            bounceGatePlayerHeight:maxDimensions.height,
+            bounceGatePlayerPosition: maximizedPosition,
+
+            welcomePageShown:false,
             welcomePageWidth:maxDimensions.width,
             welcomePageHeight:maxDimensions.height,
             welcomePagePosition:maximizedPosition,
@@ -862,7 +884,17 @@ class Desktop extends React.Component {
             testVideoHeight:defaultDimensions.height,
             testVideoPosition:defaultPosition,
 
-            zIndexes:{welcomePage:6, testVideo:5, testPDF:4, testFolder:3, mingleLauncher: 2}
+            computerVisionFolderWindowShown:true,
+            computerVisionFolderWindowWidth:defaultDimensions.width,
+            computerVisionFolderWindowHeight:defaultDimensions.height,
+            computerVisionFolderWindowPosition:defaultPosition,
+
+            entry1Shown:true,
+            entry1Width:maxDimensions.width,
+            entry1Height:maxDimensions.height,
+            entry1Position:maximizedPosition,
+
+            zIndexes:{welcomePage:9, testVideo:8, testPDF:7, projects:6, mingleLauncher: 5, bouncegate:4, ComputerVision:2, entry1:3 }
         };
     }
     render() {
@@ -893,6 +925,46 @@ class Desktop extends React.Component {
             return <a href='https://github.com/scaboodles' target="_blank"><img id='githubIcon' src={img1} onMouseOver={e => (e.currentTarget.src = img2)} onMouseOut={e => (e.currentTarget.src = img1)} alt="github link"></img></a>;
         }
 
+        const BounceGateIcon = () => {
+            const openFunc = () =>{
+                this.setState({bounceGatePlayerShown:true})
+                updateZIndexes('bouncegate');
+            }
+            const Icon = () => {
+                return <img src={require('./resources/bounceGate-icon.png')}/>
+            }
+            return <CustomIcon name='bouncegate' onDoubleClick={openFunc} icon={() => <Icon/>}/>
+        }
+
+        const BounceGatePlayer = () => {
+            const setWidth = (newWidth) =>{
+                //this.setState({bounceGatePlayerWidth:newWidth});
+            }
+            const setHeight = (newHeight) =>{
+                //this.setState({bounceGatePlayerHeight:newHeight});
+            }
+            const setPos = (newPos) =>{
+                //this.setState({bounceGatePlayerPosition:newPos});
+            }
+
+            const Player = () => {
+                return (
+                    <React.Fragment>
+                        <div>
+                            <iframe
+                                title="Bouncegate"
+                                src="/bouncegate/index.html"  // Update the path accordingly
+                                width={this.state.bounceGatePlayerWidth}
+                                height={this.state.bounceGatePlayerHeight}
+                            />
+                        </div>
+                    </React.Fragment>
+                  );
+            }
+
+            return <Window name='bouncegate' closeWindow={()=> this.setState({bounceGatePlayerShown:false})} windowShown={this.state.bounceGatePlayerShown} guts={() => <Player/>} zIndexes={this.state.zIndexes} updateZ={(indexDict) => setNewZIndex(indexDict)} width={this.state.bounceGatePlayerWidth} height={this.state.bounceGatePlayerHeight} updateWidth={setWidth} updateHeight={setHeight} position={this.state.bounceGatePlayerPosition} setPos={setPos} forceFullScreen={true} bgColor={"black"}/>
+        }
+
         const LinkedInLink = () => {
             const img1 = require('./resources/linkedInIcon.png');
             const img2 = require('./resources/linkedInIcon-hover.png');
@@ -920,24 +992,34 @@ class Desktop extends React.Component {
             return <Window name='testPDF' closeWindow={()=> this.setState({testPDFWindowShown:false})} windowShown={this.state.testPDFWindowShown} guts={str} zIndexes={this.state.zIndexes} updateZ={(indexDict) => setNewZIndex(indexDict)} width={this.state.testPDFWindowWidth} height={this.state.testPDFWindowHeight} updateWidth={setWidth} updateHeight={setHeight} position={this.state.testPDFWindowPosition} setPos={setPos}/>
         }
 
-        const TestFolder = () => {
-            const openFunc = () => {
-                this.setState({testFolderWindowShown:true});
-                updateZIndexes('testFolder');
-            }
-            return <Folder name='testFolder' id={"testFolder"} onDoubleClick={openFunc} />
+        const ProjectsGutsFragment = () => {
+            return(<React.Fragment>
+                <div className='iconContainer'>
+                    <TestPDF/>
+                    <BounceGateIcon/>
+                </div>
+            </React.Fragment>
+            )
         }
-        const TestFolderWindow = () => {
+
+        const ProjectsFolder = () => {
+            const openFunc = () => {
+                this.setState({projectFolderWindowShown:true});
+                updateZIndexes('projects');
+            }
+            return <Folder name='projects' id={"projects"} onDoubleClick={openFunc} />
+        }
+        const ProjectsFolderWindow = () => {
             const setWidth = (newWidth) =>{
-                this.setState({testFolderWindowWidth:newWidth});
+                this.setState({projectFolderWindowWidth:newWidth});
             }
             const setHeight = (newHeight) =>{
-                this.setState({testFolderWindowHeight:newHeight});
+                this.setState({projectFolderWindowHeight:newHeight});
             }
             const setPos = (newPos) =>{
-                this.setState({testFolderWindowPosition:newPos});
+                this.setState({projectFolderWindowPosition:newPos});
             }
-            return <Window name='testFolder' closeWindow={() => this.setState({testFolderWindowShown:false})} windowShown={this.state.testFolderWindowShown} guts={() => <TestPDF/>} zIndexes={this.state.zIndexes} updateZ={(indexDict) => setNewZIndex(indexDict)} width={this.state.testFolderWindowWidth} height={this.state.testFolderWindowHeight} updateWidth={setWidth} updateHeight={setHeight} position={this.state.testFolderWindowPosition} setPos={setPos}/>
+            return <Window name='projects' closeWindow={() => this.setState({projectFolderWindowShown:false})} windowShown={this.state.projectFolderWindowShown} guts={() => <ProjectsGutsFragment/>} zIndexes={this.state.zIndexes} updateZ={(indexDict) => setNewZIndex(indexDict)} width={this.state.projectFolderWindowWidth} height={this.state.projectFolderWindowHeight} updateWidth={setWidth} updateHeight={setHeight} position={this.state.projectFolderWindowPosition} setPos={setPos}/>
         }
 
         const mingleLauncherOpenFunc = () =>{
@@ -1020,14 +1102,66 @@ class Desktop extends React.Component {
             return <Window name='testVideo' closeWindow={closeFunc} windowShown={this.state.testVideoShown} guts={ () => <TestVideoGuts/>} zIndexes={this.state.zIndexes} updateZ={(indexDict) => setNewZIndex(indexDict)} width={this.state.testVideoWidth} height={this.state.testVideoHeight} updateWidth={setWidth} updateHeight={setHeight} position={this.state.testVideoPosition} setPos={setPos}/>
         }
 
+        const ComputerVisionFolder = () => {
+            const openFunc = () => {
+                this.setState({computerVisionFolderWindowShown:true});
+                updateZIndexes('computerVision');
+            }
+            return <Folder name='ComputerVision' id={"ComputerVision"} onDoubleClick={openFunc} />
+        }
+
+        const ComputerVisionFolderWindow = () => {
+            const setWidth = (newWidth) =>{
+                this.setState({computerVisionFolderWindowWidth:newWidth});
+            }
+            const setHeight = (newHeight) =>{
+                this.setState({computerVisionFolderWindowHeight:newHeight});
+            }
+            const setPos = (newPos) =>{
+                this.setState({computerVisionFolderWindowPosition:newPos});
+            }
+            return <Window name='ComputerVision' closeWindow={() => this.setState({computerVisionFolderWindowShown:false})} windowShown={this.state.computerVisionFolderWindowShown} guts={() => <ComputerVisionGutsFragment/>} zIndexes={this.state.zIndexes} updateZ={(indexDict) => setNewZIndex(indexDict)} width={this.state.computerVisionFolderWindowWidth} height={this.state.computerVisionFolderWindowHeight} updateWidth={setWidth} updateHeight={setHeight} position={this.state.computerVisionFolderWindowPosition} setPos={setPos}/>
+        }
+
+        const ComputerVisionGutsFragment = () => {
+            return(<React.Fragment>
+                <div className='iconContainer'>
+                    <Entry1Icon/>
+                </div>
+            </React.Fragment>
+            )
+        }
+
+        const Entry1Icon = () => {
+            const openFunc = () =>{
+                this.setState({entry1Shown:true})
+                updateZIndexes('entry1');
+            }
+            return <Pdf name='Entry1' onDoubleClick={openFunc}/>
+        }
+        const Entry1Window = () =>{
+            const setWidth = (newWidth) =>{
+                this.setState({entry1Width:newWidth});
+            }
+            const setHeight = (newHeight) =>{
+                this.setState({entry1Height:newHeight});
+            }
+            const setPos = (newPos) =>{
+                this.setState({entry1Position:newPos});
+            }
+            return <Window name='entry1' closeWindow={()=> this.setState({entry1Shown:false})} windowShown={this.state.entry1Shown} guts={() => <Entry1/>} zIndexes={this.state.zIndexes} updateZ={(indexDict) => setNewZIndex(indexDict)} width={this.state.entry1Width} height={this.state.entry1Height} updateWidth={setWidth} updateHeight={setHeight} position={this.state.entry1Position} setPos={setPos}/>
+        }
+
         return (
             <div id='Desktop'>
                 <GithubLink/>
                 <LinkedInLink/>
 
-                <TestFolder/>
-                <TestFolderWindow/>
+                <ProjectsFolder/>
+                <ProjectsFolderWindow/>
+
                 <TestPDFWindow/>
+                <BounceGatePlayer/>
 
                 <WelcomeIcon/>
                 <WelcomeWindow/>
@@ -1035,8 +1169,11 @@ class Desktop extends React.Component {
                 <MingleLauncherIcon/>
                 <MingleLauncherWindow/>
 
-                <TestVideoIcon/>
-                <TestVideoWindow/>
+                <ComputerVisionFolder/>
+                <ComputerVisionFolderWindow/>
+
+                <Entry1Window/>
+
             </div>
         )
     };
